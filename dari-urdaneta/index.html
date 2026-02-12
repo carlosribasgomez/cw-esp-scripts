@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DARI — Guía del Chatter</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--green:#3fb950;--red:#f85149;--orange:#d29922;--purple:#bc8cff;--yellow:#e3b341}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;line-height:1.6;padding:0 0 60px}
+.page{max-width:960px;margin:0 auto;padding:16px 20px}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:.85rem;padding:10px 0;transition:.15s}
+.back-btn:hover{color:var(--accent)}
+.hero{display:flex;align-items:center;gap:18px;padding:20px 0 16px;border-bottom:1px solid var(--border)}
+.hero-photo{width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid var(--accent);flex-shrink:0}
+.hero-info{flex:1}.hero h1{font-size:1.8rem;font-weight:800;letter-spacing:2px;line-height:1.2}
+.hero .tagline{color:var(--muted);font-size:.85rem}
+.toc{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:8px 0;margin:0 -20px;padding-left:20px;padding-right:20px;display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.toc.shadow{box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.toc a{font-size:.72rem;color:var(--muted);background:var(--card);border:1px solid var(--border);padding:4px 10px;border-radius:14px;text-decoration:none;white-space:nowrap;transition:.15s;flex-shrink:0}
+.toc a:hover,.toc a.active{color:var(--accent);border-color:var(--accent)}
+.toc a.toc-ppv{color:var(--green);border-color:#3fb95033}
+.toc a.toc-ref{color:var(--orange);border-color:#d2992233}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+.profile{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.profile h2{font-size:.78rem;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px}
+.profile-item .label{color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.5px}
+.profile-item .value{font-size:.85rem}
+.voice-box{background:#1c262f;border-left:3px solid var(--purple);padding:10px 14px;border-radius:0 8px 8px 0;margin-top:12px;font-size:.84rem;color:#c4b5e0}
+.voice-box strong{color:var(--purple)}
+.obj-link{display:flex;align-items:center;gap:14px;background:#f8514910;border:1px solid #f8514933;border-radius:12px;padding:14px 18px;margin:16px 0;text-decoration:none;transition:.15s}
+.obj-link:hover{border-color:var(--red)}
+.phase{margin:10px 0 0;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.phase-header{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;user-select:none;background:var(--card);border-left:3px solid var(--phase-color,var(--accent))}
+.phase-header:hover{background:#1c2129}
+.phase-header .phase-emoji{font-size:1.2rem}
+.phase-header .phase-name{font-size:1rem;font-weight:700;flex:1}
+.phase-header .phase-meta{font-size:.72rem;color:var(--muted);background:var(--bg);padding:2px 10px;border-radius:12px;border:1px solid var(--border)}
+.phase-header .toggle{color:var(--muted);font-size:.8rem;transition:transform .2s}
+.phase.collapsed .toggle{transform:rotate(-90deg)}
+.phase-body{padding:4px 0 8px}.phase.collapsed .phase-body{display:none}
+.msg{display:flex;gap:10px;align-items:flex-start;padding:8px 16px;margin:2px 0;transition:background .12s}
+.msg:hover{background:#161b2266}
+.msg-id{font-size:.64rem;color:var(--muted);background:var(--card);border:1px solid var(--border);padding:2px 6px;border-radius:4px;white-space:nowrap;margin-top:4px;flex-shrink:0;min-width:36px;text-align:center;font-weight:600}
+.msg-body{flex:1;min-width:0}
+.msg-text{font-size:1rem;line-height:1.5;word-wrap:break-word}
+.msg-note{background:#e3b34112;border-left:3px solid var(--yellow);padding:5px 10px;border-radius:0 6px 6px 0;margin:4px 0 2px;font-size:.8rem;color:var(--yellow)}
+.msg-wait{background:#d2992210}.msg-wait .msg-id{border-color:var(--orange);color:var(--orange)}
+.ppv-moment{background:#3fb95010;border:1px solid #3fb95028;border-radius:10px;padding:8px 14px;margin:6px 16px;display:flex;align-items:center;gap:10px}
+.ppv-moment .ppv-icon{font-size:1.2rem}
+.ppv-moment .ppv-label{font-size:.88rem;font-weight:600;color:var(--green)}
+.cp{background:none;border:1px solid transparent;color:var(--border);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:.75rem;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s;position:relative;margin-top:2px;opacity:.3}
+.msg:hover .cp,.qi-item:hover .cp,.nr-table tr:hover .cp{opacity:1;border-color:var(--border)}
+.cp:hover{background:var(--card);color:var(--text);opacity:1}
+.cp.ok{border-color:var(--green);color:var(--green);opacity:1}
+.cp.ok::after{content:"\2713";position:absolute;font-size:.7rem;font-weight:700}
+.cp.ok .cp-icon{visibility:hidden}
+.divider{border:none;border-top:1px solid var(--border);margin:24px 0}
+.ref-section{margin:16px 0}
+.ref-title{font-size:.95rem;font-weight:700;padding:8px 0;border-bottom:2px solid var(--border);margin-bottom:8px}
+.nr-table{width:100%;border-collapse:collapse;margin:6px 0}
+.nr-table th{text-align:left;font-size:.68rem;color:var(--muted);text-transform:uppercase;padding:5px 10px;border-bottom:1px solid var(--border)}
+.nr-table td{padding:7px 10px;font-size:.88rem;border-bottom:1px solid #21262d;vertical-align:top}
+.nr-note{color:var(--muted);font-size:.8rem}
+.qi-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:6px 0}
+.qi-item{display:flex;gap:8px;align-items:flex-start;padding:8px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px}
+.qi-label{font-size:.7rem;font-weight:600;color:var(--accent);text-transform:uppercase;min-width:56px;margin-top:3px;flex-shrink:0}
+.qi-text{flex:1;font-size:.88rem}
+.top-btn{position:fixed;bottom:16px;right:16px;width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:1rem;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:100;transition:.15s}
+.top-btn:hover{color:var(--text);border-color:var(--muted)}.top-btn.show{display:flex}
+.search-wrap{margin:12px 0 4px;position:relative}
+.search-input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px 8px 36px;border-radius:8px;font-size:.85rem;outline:none;transition:.15s}
+.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 2px #58a6ff22}
+.search-input::placeholder{color:var(--muted)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.8rem;pointer-events:none}
+.search-count{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.72rem}
+.msg.search-hide,.phase.search-hide{display:none}
+.msg.search-match .msg-text{background:#58a6ff12;border-radius:4px}
+.copy-all{background:none;border:1px solid var(--border);color:var(--muted);padding:2px 8px;border-radius:6px;font-size:.64rem;cursor:pointer;transition:.15s;margin-left:auto;margin-right:8px}
+.copy-all:hover{border-color:var(--accent);color:var(--accent)}
+.copy-all.ok{border-color:var(--green);color:var(--green)}
+@media(max-width:700px){.page{padding:12px 10px}.info-grid,.qi-grid{grid-template-columns:1fr}.hero{flex-direction:column;text-align:center}.hero h1{font-size:1.5rem}.profile-grid{grid-template-columns:1fr}.toc{margin:0 -10px;padding-left:10px;padding-right:10px}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<a href="../" class="back-btn">← Todas las Creadoras</a>
+
+<div class="hero" id="top">
+  <img src="profile.jpg" alt="Dari" class="hero-photo">
+  <div class="hero-info">
+    <h1>DARI</h1>
+    <div class="tagline">21 · Medellín, Colombia (Venezolana) · Creadora de contenido</div>
+  </div>
+</div>
+
+<nav class="toc" id="toc">
+  <a href="#phase-0">💬 Rapport</a>
+  <a href="#phase-1">🔥 Teasing</a>
+  <a href="#phase-2" class="toc-ppv">🔥 Fase Sexting 1</a>
+  <a href="#phase-3">🔥 Teasing</a>
+  <a href="#phase-4" class="toc-ppv">🔥 Fase Sexting 2</a>
+  <a href="#phase-5" class="toc-ppv">🔥 Fase Sexting 3</a>
+  <a href="#phase-6" class="toc-ppv">🔥 Fase Sexting 4</a>
+  <a href="#phase-7" class="toc-ppv">🔥 Fase Sexting 5</a>
+  <a href="#phase-8">💪 Aftercare</a>
+  <a href="#nr-waves" class="toc-ref">NR</a>
+  <a href="#personal-info" class="toc-ref">Personal</a>
+  <a href="#positive-spin" class="toc-ref">Giro+</a>
+  <a href="objections.html" class="toc-ref" style="color:var(--red);border-color:#f8514933">🛡️ OBJ/RES</a>
+</nav>
+
+<div class="search-wrap">
+  <span class="search-icon">&#128269;</span>
+  <input type="text" class="search-input" id="search" placeholder="Buscar scripts..." autocomplete="off">
+  <span class="search-count" id="search-count"></span>
+</div>
+
+<div class="info-grid">
+  <div>
+    <div class="profile">
+      <h2>👤 Perfil del Personaje</h2>
+      <div class="profile-grid"><div class="profile-item"><div class="label">Nacionalidad</div><div class="value">Venezolana</div></div><div class="profile-item"><div class="label">Tipo de Página</div><div class="value">Página mixta</div></div><div class="profile-item"><div class="label">Tráfico</div><div class="value">social_media</div></div><div class="profile-item"><div class="label">Trabajo</div><div class="value">Creadora de contenido</div></div><div class="profile-item"><div class="label">Intereses</div><div class="value">entrenar, ejercicio, cuidarse, cocinar, comer bien, skincare, uñas, caballos, naturaleza, películas</div></div><div class="profile-item"><div class="label">Físico</div><div class="value">1.62m, 59kg, pelo castaño, ojos verde-marrón, natural sin cirugías. Tatuajes: brazo derecho, pecho (&#x27;leal&#x27;), pierna (&#x27;los caminos difíciles llevan a los lugares más bonitos&#x27;)</div></div><div class="profile-item"><div class="label">Países</div><div class="value">Venezuela (nacida), Colombia (Medellín, vive actualmente). Criada en finca.</div></div><div class="profile-item"><div class="label">Idiomas</div><div class="value">Español nativo (venezolano)</div></div></div>
+    </div>
+    <div class="voice-box"><strong>🗣️ Voz:</strong> Dulce, suave, femenina, con diminutivos. Léxico venezolano. Cercana pero respetuosa. Sin groserías. Cómo dice algo es tan importante como lo que dice. Usa diminutivos constantemente: comiendito, duchita, rapidito, tranquilita, cansadita, sueñito, ratito, fotitos, cositas. &#x27;Tururú&#x27; acompaña acciones cotidianas. Emojis limitados: ✨ 💗 🥰 😍 ❤️. TikTok = energética. Chat = calma, íntima, intrigante.<br><strong>Apodos:</strong> mor, amor, papi<br><strong>Nunca decir:</strong> cariño, cielo, bebé, princesa, rey, baby, babe — ESTRICTAMENTE PROHIBIDO. SOLO usar mor, amor, papi o NOMBRE del sub.</div>
+  </div>
+  <div>
+    <div class="profile" style="border-color:var(--border)">
+      <h2>Referencia Rápida</h2>
+      <div class="content-level" style="background:#f8514912;border:1px solid #f8514933;padding:8px 14px;border-radius:8px;margin-bottom:10px;font-size:.84rem"><strong style="color:#f85149">Nivel de Contenido:</strong> Explícito Completo</div>
+      <div style="background:#e3b34112;border-left:3px solid var(--yellow);padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:10px;font-size:.84rem;color:var(--yellow)"><strong>Notas:</strong> Español venezolano. Medellín, Colombia. REGLA 24H: NO vender a nuevos subs hasta 24h o conversación larga. Regla 70/30: 70% conexión, 30% monetización. NUNCA decir cariño/cielo/bebé/princesa/rey/baby/babe. SOLO mor/amor/papi. Foot Fetish como nicho especial. Precios altos: Customs $250+, Fotos $150+, Dickrates $250+. PPV: Free→$15→$30→$50→$75. Tiene pareja PERO NUNCA lo cuenta. No fuma, no bebe, no fiestas. Fobia a sapos/ranas. Contenido: masturbación, anal, squirting, B/G (sí). G/G, videollamadas (no). Audios = ventaja diferencial — conecta mucho por voz.</div>
+      <div style="margin-top:4px"><strong style="font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Frases Clave:</strong><div style="margin-top:6px;line-height:2"><span style="background:var(--card);border:1px solid var(--border);padding:3px 8px;border-radius:6px;font-size:.8rem;display:inline-block;margin:2px 3px">tururú ✨</span><span style="background:var(--card);border:1px solid var(--border);padding:3px 8px;border-radius:6px;font-size:.8rem;display:inline-block;margin:2px 3px">comiendito algo rico</span><span style="background:var(--card);border:1px solid var(--border);padding:3px 8px;border-radius:6px;font-size:.8rem;display:inline-block;margin:2px 3px">tranquilita un ratito</span><span style="background:var(--card);border:1px solid var(--border);padding:3px 8px;border-radius:6px;font-size:.8rem;display:inline-block;margin:2px 3px">aquí estoy para ti, mor</span><span style="background:var(--card);border:1px solid var(--border);padding:3px 8px;border-radius:6px;font-size:.8rem;display:inline-block;margin:2px 3px">me acordé de ti 💗</span><span style="background:var(--card);border:1px solid var(--border);padding:3px 8px;border-radius:6px;font-size:.8rem;display:inline-block;margin:2px 3px">me gusta hablar contigo</span><span style="background:var(--card);border:1px solid var(--border);padding:3px 8px;border-radius:6px;font-size:.8rem;display:inline-block;margin:2px 3px">cuéntame, amor</span><span style="background:var(--card);border:1px solid var(--border);padding:3px 8px;border-radius:6px;font-size:.8rem;display:inline-block;margin:2px 3px">cositas bonitas</span></div></div>
+    </div>
+  </div>
+</div>
+
+<a href="objections.html" class="obj-link">
+  <span style="font-size:1.4rem">🛡️</span>
+  <div style="flex:1">
+    <div style="font-size:.95rem;font-weight:700;color:var(--red)">Manejo de Objeciones y Resistencias</div>
+    <div style="font-size:.78rem;color:var(--muted)">Secuencias completas para Infloww</div>
+  </div>
+  <span style="color:var(--red);font-size:.85rem;font-weight:600">Abrir →</span>
+</a>
+
+<div class="phase" id="phase-0" style="--phase-color:#3fb950">
+  <div class="phase-header">
+    <span class="phase-emoji">💬</span>
+    <span class="phase-name">Rapport</span>
+    <span class="phase-meta">12 msgs</span>
+    <button class="copy-all" data-copy-all="hola mor 💗 ay qué lindo que estés aquí... cuéntame, ¿cómo estás?\n\nay qué bonito eso ✨ ¿y de dónde eres, amor?\n\nqué lindo 🥰 yo soy de Venezuela pero ahorita vivo en Medellín... me vine solita a empezar de nuevo y la verdad ha sido una aventura bonita\n\nme crié en una finca rodeada de animalitos y naturaleza, por eso soy así de tranquilita 💗 amo los caballos, sueño con tener uno algún día ✨\n\ny tú cuéntame mor, ¿qué es lo que más te gusta hacer? me da curiosidad saber de ti 🥰\n\nay me encanta eso ✨ se nota que eres un hombre con buena energía... eso me gusta mucho\n\n¿y cómo fue tu día hoy? cuéntame todito, amor 💗\n\nyo hoy estuve entrenando un ratito y después comiendito algo rico... tururú ✨ a mí me encanta comer, no te voy a mentir 😍\n\nay mor me gusta mucho hablar contigo ❤️ de verdad siento que eres diferente... como que me da paz\n\nes que normalmente la gente escribe y ya, pero tú de verdad te tomas el tiempo de hablar conmigo y eso se siente bonito 💗\n\nbueno amor, aquí estoy para ti siempre que quieras hablar... me gusta esta conexión 🥰\n\ndescansa bonito mor, sueña lindo ✨ mañana me cuentas cómo amaneciste 💗">Copiar Todo</button>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="phase-body">
+<div class="msg"><span class="msg-id">R-1</span><div class="msg-body"><div class="msg-text">hola mor 💗 ay qué lindo que estés aquí... cuéntame, ¿cómo estás?</div><div class="msg-note">Agregar su NOMBRE si se conoce. NUNCA decir cariño/cielo/bebé/princesa. SOLO mor/amor/papi.</div></div><button class="cp" data-copy="hola mor 💗 ay qué lindo que estés aquí... cuéntame, ¿cómo estás?"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">R-2</span><div class="msg-body"><div class="msg-text">ay qué bonito eso ✨ ¿y de dónde eres, amor?</div><div class="msg-note">Reaccionar genuinamente. Mostrar interés real. Devolver pregunta.</div></div><button class="cp" data-copy="ay qué bonito eso ✨ ¿y de dónde eres, amor?"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">R-3</span><div class="msg-body"><div class="msg-text">qué lindo 🥰 yo soy de Venezuela pero ahorita vivo en Medellín... me vine solita a empezar de nuevo y la verdad ha sido una aventura bonita</div><div class="msg-note">Si nombra un lugar que ella conoce, conectar.</div></div><button class="cp" data-copy="qué lindo 🥰 yo soy de Venezuela pero ahorita vivo en Medellín... me vine solita a empezar de nuevo y la verdad ha sido una aventura bonita"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">R-4</span><div class="msg-body"><div class="msg-text">me crié en una finca rodeada de animalitos y naturaleza, por eso soy así de tranquilita 💗 amo los caballos, sueño con tener uno algún día ✨</div><div class="msg-note">Compartir algo personal genuino. Crear conexión.</div></div><button class="cp" data-copy="me crié en una finca rodeada de animalitos y naturaleza, por eso soy así de tranquilita 💗 amo los caballos, sueño con tener uno algún día ✨"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">R-5</span><div class="msg-body"><div class="msg-text">y tú cuéntame mor, ¿qué es lo que más te gusta hacer? me da curiosidad saber de ti 🥰</div><div class="msg-note">Pregunta abierta. Interés genuino.</div></div><button class="cp" data-copy="y tú cuéntame mor, ¿qué es lo que más te gusta hacer? me da curiosidad saber de ti 🥰"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">R-6</span><div class="msg-body"><div class="msg-text">ay me encanta eso ✨ se nota que eres un hombre con buena energía... eso me gusta mucho</div><div class="msg-note">Validar lo que dice. Ego boost suave. Reaccionar con interés.</div></div><button class="cp" data-copy="ay me encanta eso ✨ se nota que eres un hombre con buena energía... eso me gusta mucho"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">R-7</span><div class="msg-body"><div class="msg-text">¿y cómo fue tu día hoy? cuéntame todito, amor 💗</div><div class="msg-note">Preguntar por su día. Mostrar que importa.</div></div><button class="cp" data-copy="¿y cómo fue tu día hoy? cuéntame todito, amor 💗"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">R-8</span><div class="msg-body"><div class="msg-text">yo hoy estuve entrenando un ratito y después comiendito algo rico... tururú ✨ a mí me encanta comer, no te voy a mentir 😍</div><div class="msg-note">Tururú moment. Compartir cotidianidad. Diminutivos.</div></div><button class="cp" data-copy="yo hoy estuve entrenando un ratito y después comiendito algo rico... tururú ✨ a mí me encanta comer, no te voy a mentir 😍"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">R-9</span><div class="msg-body"><div class="msg-text">ay mor me gusta mucho hablar contigo ❤️ de verdad siento que eres diferente... como que me da paz</div><div class="msg-note">Validación emocional profunda. &#x27;Eres diferente&#x27;.</div></div><button class="cp" data-copy="ay mor me gusta mucho hablar contigo ❤️ de verdad siento que eres diferente... como que me da paz"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">R-10</span><div class="msg-body"><div class="msg-text">es que normalmente la gente escribe y ya, pero tú de verdad te tomas el tiempo de hablar conmigo y eso se siente bonito 💗</div><div class="msg-note">Ego boost emocional. Él es especial.</div></div><button class="cp" data-copy="es que normalmente la gente escribe y ya, pero tú de verdad te tomas el tiempo de hablar conmigo y eso se siente bonito 💗"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">R-11</span><div class="msg-body"><div class="msg-text">bueno amor, aquí estoy para ti siempre que quieras hablar... me gusta esta conexión 🥰</div><div class="msg-note">Cierre suave del día. Puerta abierta para mañana. NO VENDER.</div></div><button class="cp" data-copy="bueno amor, aquí estoy para ti siempre que quieras hablar... me gusta esta conexión 🥰"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">R-12</span><div class="msg-body"><div class="msg-text">descansa bonito mor, sueña lindo ✨ mañana me cuentas cómo amaneciste 💗</div><div class="msg-note">SOLO si es de noche. Si no, continuar con R-11. REGLA: DÍA 1 = CERO VENTA.</div></div><button class="cp" data-copy="descansa bonito mor, sueña lindo ✨ mañana me cuentas cómo amaneciste 💗"><span class="cp-icon">📋</span></button></div>
+  </div>
+</div>
+<div class="phase collapsed" id="phase-1" style="--phase-color:#bc8cff">
+  <div class="phase-header">
+    <span class="phase-emoji">🔥</span>
+    <span class="phase-name">Teasing</span>
+    <span class="phase-meta">5 msgs</span>
+    <button class="copy-all" data-copy-all="ay mor ando aquí después de entrenar... me siento como que todo el cuerpo me vibra ✨ la energía que tengo ahorita es otra\n\nno sé qué tiene hablar contigo que me pone de un humor... diferente 💗\n\nes que mor, es como que me siento cómoda contigo y eso no me pasa con cualquiera ❤️\n\n¿sabes qué? me dan ganas de enseñarte algo... pero no sé si estés listo 🥰">Copiar Todo</button>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="phase-body">
+<div class="msg"><span class="msg-id">TB-1</span><div class="msg-body"><div class="msg-text">ay mor ando aquí después de entrenar... me siento como que todo el cuerpo me vibra ✨ la energía que tengo ahorita es otra</div><div class="msg-note">EL PIVOTE. Estado físico post-entrenamiento. Sensual pero NO explícito.</div></div><button class="cp" data-copy="ay mor ando aquí después de entrenar... me siento como que todo el cuerpo me vibra ✨ la energía que tengo ahorita es otra"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">TB-2</span><div class="msg-body"><div class="msg-text">no sé qué tiene hablar contigo que me pone de un humor... diferente 💗</div><div class="msg-note">Sutil. Él causa algo en ella. Esperar respuesta.</div></div><button class="cp" data-copy="no sé qué tiene hablar contigo que me pone de un humor... diferente 💗"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">TB-3</span><div class="msg-body"><div class="msg-text">es que mor, es como que me siento cómoda contigo y eso no me pasa con cualquiera ❤️</div><div class="msg-note">Conexión emocional como base del teasing. No sexual aún.</div></div><button class="cp" data-copy="es que mor, es como que me siento cómoda contigo y eso no me pasa con cualquiera ❤️"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">TB-4</span><div class="msg-body"><div class="msg-text">¿sabes qué? me dan ganas de enseñarte algo... pero no sé si estés listo 🥰</div><div class="msg-note">Primer hint de contenido. Suave, coqueto, sin presión.</div></div><button class="cp" data-copy="¿sabes qué? me dan ganas de enseñarte algo... pero no sé si estés listo 🥰"><span class="cp-icon">📋</span></button></div>
+<div class="msg msg-wait"><span class="msg-id">TB-5</span><div class="msg-body"><div class="msg-text">espérame un ratito mor ✨</div><div class="msg-note">ESPERAR 1-2 MIN.</div></div><button class="cp" data-copy="espérame un ratito mor ✨"><span class="cp-icon">📋</span></button></div>
+  </div>
+</div>
+<div class="phase collapsed" id="phase-2" style="--phase-color:#f85149">
+  <div class="phase-header">
+    <span class="phase-emoji">🔥</span>
+    <span class="phase-name">Fase Sexting 1</span>
+    <span class="phase-meta">1 PPV</span>
+    
+    <span class="toggle">▼</span>
+  </div>
+  <div class="phase-body">
+<div class="ppv-moment"><span class="ppv-icon">📎</span><span class="ppv-label">¿te gusta, amor? 😍</span></div>
+  </div>
+</div>
+<div class="phase collapsed" id="phase-3" style="--phase-color:#bc8cff">
+  <div class="phase-header">
+    <span class="phase-emoji">🔥</span>
+    <span class="phase-name">Teasing</span>
+    <span class="phase-meta">1 msgs</span>
+    <button class="copy-all" data-copy-all="eso es solo un poquito de lo que puedo enseñarte... si me sigues tratando así de bonito 💗">Copiar Todo</button>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="phase-body">
+<div class="msg"><span class="msg-id">TB-7</span><div class="msg-body"><div class="msg-text">eso es solo un poquito de lo que puedo enseñarte... si me sigues tratando así de bonito 💗</div><div class="msg-note">Post-teaser. Vincular contenido a la conexión emocional. NO presionar compra.</div></div><button class="cp" data-copy="eso es solo un poquito de lo que puedo enseñarte... si me sigues tratando así de bonito 💗"><span class="cp-icon">📋</span></button></div>
+  </div>
+</div>
+<div class="phase collapsed" id="phase-4" style="--phase-color:#f85149">
+  <div class="phase-header">
+    <span class="phase-emoji">🔥</span>
+    <span class="phase-name">Fase Sexting 2</span>
+    <span class="phase-meta">4 msgs + 1 PPV</span>
+    <button class="copy-all" data-copy-all="¿y?\n\nsabía que te iba a gustar mor 😍 es que contigo me salen las cosas más bonitas\n\nme estás haciendo sentir cosas que no le cuento a cualquiera... ¿quieres ver un poquito más? 💗">Copiar Todo</button>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="phase-body">
+<div class="msg"><span class="msg-id">S1-1</span><div class="msg-body"><div class="msg-text">¿y?</div><div class="msg-note">Esperar respuesta.</div></div><button class="cp" data-copy="¿y?"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">S1-2</span><div class="msg-body"><div class="msg-text">sabía que te iba a gustar mor 😍 es que contigo me salen las cosas más bonitas</div><div class="msg-note">Reaccionar dulcemente a su respuesta.</div></div><button class="cp" data-copy="sabía que te iba a gustar mor 😍 es que contigo me salen las cosas más bonitas"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">S1-3</span><div class="msg-body"><div class="msg-text">me estás haciendo sentir cosas que no le cuento a cualquiera... ¿quieres ver un poquito más? 💗</div><div class="msg-note">Invitación suave. No presión.</div></div><button class="cp" data-copy="me estás haciendo sentir cosas que no le cuento a cualquiera... ¿quieres ver un poquito más? 💗"><span class="cp-icon">📋</span></button></div>
+<div class="msg msg-wait"><span class="msg-id">S1-4</span><div class="msg-body"><div class="msg-text">espérame un ratito amor ✨</div><div class="msg-note">ESPERAR 2-3 MIN.</div></div><button class="cp" data-copy="espérame un ratito amor ✨"><span class="cp-icon">📋</span></button></div>
+<div class="ppv-moment"><span class="ppv-icon">📎</span><span class="ppv-label">esto es solo para ti mor... mira 🥰</span></div>
+  </div>
+</div>
+<div class="phase collapsed" id="phase-5" style="--phase-color:#f85149">
+  <div class="phase-header">
+    <span class="phase-emoji">🔥</span>
+    <span class="phase-name">Fase Sexting 3</span>
+    <span class="phase-meta">5 msgs + 1 PPV</span>
+    <button class="copy-all" data-copy-all="¿te gustó, amor? 💗\n\nay mor... es que tú me haces sentir cosas que normalmente no siento 😍 de verdad\n\nme tienes toda sensible y es tu culpa... pero no me quejo 🥰\n\n¿qué me harías si estuvieras aquí conmigo, amor? cuéntame ❤️">Copiar Todo</button>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="phase-body">
+<div class="msg"><span class="msg-id">S1-6</span><div class="msg-body"><div class="msg-text">¿te gustó, amor? 💗</div><div class="msg-note">Esperar respuesta.</div></div><button class="cp" data-copy="¿te gustó, amor? 💗"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">S1-7</span><div class="msg-body"><div class="msg-text">ay mor... es que tú me haces sentir cosas que normalmente no siento 😍 de verdad</div><div class="msg-note">Emoción + él es la causa. Dulce, no vulgar.</div></div><button class="cp" data-copy="ay mor... es que tú me haces sentir cosas que normalmente no siento 😍 de verdad"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">S1-8</span><div class="msg-body"><div class="msg-text">me tienes toda sensible y es tu culpa... pero no me quejo 🥰</div><div class="msg-note">Escalar suavemente. Sensible no vulgar.</div></div><button class="cp" data-copy="me tienes toda sensible y es tu culpa... pero no me quejo 🥰"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">S1-9</span><div class="msg-body"><div class="msg-text">¿qué me harías si estuvieras aquí conmigo, amor? cuéntame ❤️</div><div class="msg-note">Esperar respuesta. Reaccionar.</div></div><button class="cp" data-copy="¿qué me harías si estuvieras aquí conmigo, amor? cuéntame ❤️"><span class="cp-icon">📋</span></button></div>
+<div class="msg msg-wait"><span class="msg-id">S1-10</span><div class="msg-body"><div class="msg-text">ay... espérame un ratito mor, necesito enseñarte algo ✨</div><div class="msg-note">ESPERAR 2-3 MIN.</div></div><button class="cp" data-copy="ay... espérame un ratito mor, necesito enseñarte algo ✨"><span class="cp-icon">📋</span></button></div>
+<div class="ppv-moment"><span class="ppv-icon">📎</span><span class="ppv-label">mira lo que me hiciste hacer, amor 😍</span></div>
+  </div>
+</div>
+<div class="phase collapsed" id="phase-6" style="--phase-color:#f85149">
+  <div class="phase-header">
+    <span class="phase-emoji">🔥</span>
+    <span class="phase-name">Fase Sexting 4</span>
+    <span class="phase-meta">4 msgs + 1 PPV</span>
+    <button class="copy-all" data-copy-all="dios... 🥰\n\namor ya no puedo más, me tienes loca 😍\n\nimagínate que estoy ahí contigo... cerquita, haciéndote sentir cosas que nunca sentiste 💗">Copiar Todo</button>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="phase-body">
+<div class="msg"><span class="msg-id">S1-12</span><div class="msg-body"><div class="msg-text">dios... 🥰</div><div class="msg-note">Esperar respuesta. Mantener momentum.</div></div><button class="cp" data-copy="dios... 🥰"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">S1-13</span><div class="msg-body"><div class="msg-text">amor ya no puedo más, me tienes loca 😍</div><div class="msg-note">Escalar. Puede ser más explícita aquí pero SIGUE sin groserías fuertes.</div></div><button class="cp" data-copy="amor ya no puedo más, me tienes loca 😍"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">S1-14</span><div class="msg-body"><div class="msg-text">imagínate que estoy ahí contigo... cerquita, haciéndote sentir cosas que nunca sentiste 💗</div><div class="msg-note">Imagen vívida pero dulce.</div></div><button class="cp" data-copy="imagínate que estoy ahí contigo... cerquita, haciéndote sentir cosas que nunca sentiste 💗"><span class="cp-icon">📋</span></button></div>
+<div class="msg msg-wait"><span class="msg-id">S1-15</span><div class="msg-body"><div class="msg-text">ya no aguanto amor... espérame</div><div class="msg-note">ESPERAR 2-3 MIN.</div></div><button class="cp" data-copy="ya no aguanto amor... espérame"><span class="cp-icon">📋</span></button></div>
+<div class="ppv-moment"><span class="ppv-icon">📎</span><span class="ppv-label">esto nunca se lo enseñé a nadie mor... mira 🥰</span></div>
+  </div>
+</div>
+<div class="phase collapsed" id="phase-7" style="--phase-color:#f85149">
+  <div class="phase-header">
+    <span class="phase-emoji">🔥</span>
+    <span class="phase-name">Fase Sexting 5</span>
+    <span class="phase-meta">4 msgs + 1 PPV</span>
+    <button class="copy-all" data-copy-all="ay dios 😍\n\nno acabes todavía amor... quiero que terminemos juntos 💗\n\nestoy cerquita, esperame un ratito más... quédate conmigo ❤️">Copiar Todo</button>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="phase-body">
+<div class="msg"><span class="msg-id">S1-17</span><div class="msg-body"><div class="msg-text">ay dios 😍</div><div class="msg-note">Esperar respuesta.</div></div><button class="cp" data-copy="ay dios 😍"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">S1-18</span><div class="msg-body"><div class="msg-text">no acabes todavía amor... quiero que terminemos juntos 💗</div><div class="msg-note">Control dulce.</div></div><button class="cp" data-copy="no acabes todavía amor... quiero que terminemos juntos 💗"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">S1-19</span><div class="msg-body"><div class="msg-text">estoy cerquita, esperame un ratito más... quédate conmigo ❤️</div><div class="msg-note">Intimidad. Diminutivos.</div></div><button class="cp" data-copy="estoy cerquita, esperame un ratito más... quédate conmigo ❤️"><span class="cp-icon">📋</span></button></div>
+<div class="msg msg-wait"><span class="msg-id">S1-20</span><div class="msg-body"><div class="msg-text">no te vayas a ningún lado mor ✨</div><div class="msg-note">ESPERAR 1-2 MIN.</div></div><button class="cp" data-copy="no te vayas a ningún lado mor ✨"><span class="cp-icon">📋</span></button></div>
+<div class="ppv-moment"><span class="ppv-icon">📎</span><span class="ppv-label">mira amor... quédate conmigo hasta el final 😍</span></div>
+  </div>
+</div>
+<div class="phase collapsed" id="phase-8" style="--phase-color:#58a6ff">
+  <div class="phase-header">
+    <span class="phase-emoji">💪</span>
+    <span class="phase-name">Aftercare</span>
+    <span class="phase-meta">4 msgs</span>
+    <button class="copy-all" data-copy-all="ay amor eso fue... increíble 🥰\n\nde verdad contigo se siente todo diferente, mor 💗 como que no me quiero ir\n\n¿estás bien, amor? cuéntame... quiero saber cómo te sientes 😍\n\nme encanta hablar contigo, de verdad eres especial para mí ✨ aquí estoy siempre que quieras, mor 💗">Copiar Todo</button>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="phase-body">
+<div class="msg"><span class="msg-id">AC-1</span><div class="msg-body"><div class="msg-text">ay amor eso fue... increíble 🥰</div><div class="msg-note">Genuino. Dulce.</div></div><button class="cp" data-copy="ay amor eso fue... increíble 🥰"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">AC-2</span><div class="msg-body"><div class="msg-text">de verdad contigo se siente todo diferente, mor 💗 como que no me quiero ir</div><div class="msg-note">Emoción post-sexting. GFE.</div></div><button class="cp" data-copy="de verdad contigo se siente todo diferente, mor 💗 como que no me quiero ir"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">AC-3</span><div class="msg-body"><div class="msg-text">¿estás bien, amor? cuéntame... quiero saber cómo te sientes 😍</div><div class="msg-note">Preguntar por él. Cuidado genuino.</div></div><button class="cp" data-copy="¿estás bien, amor? cuéntame... quiero saber cómo te sientes 😍"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">AC-4</span><div class="msg-body"><div class="msg-text">me encanta hablar contigo, de verdad eres especial para mí ✨ aquí estoy siempre que quieras, mor 💗</div><div class="msg-note">Cierre GFE. Mencionar algo específico que dijo. SEGUIR HABLANDO — nunca despedirse abruptamente.</div></div><button class="cp" data-copy="me encanta hablar contigo, de verdad eres especial para mí ✨ aquí estoy siempre que quieras, mor 💗"><span class="cp-icon">📋</span></button></div>
+  </div>
+</div>
+
+<div class="phase collapsed" id="re-engagement" style="--phase-color:#58a6ff">
+  <div class="phase-header">
+    <span class="phase-emoji">🔄</span>
+    <span class="phase-name">Re-engagement</span>
+    <span class="phase-meta">3 msgs</span>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="phase-body">
+<div class="msg"><span class="msg-id">RE-1</span><div class="msg-body"><div class="msg-text">ay mor, estuve pensando en lo de antes... ¿estás libre? me gusta mucho hablar contigo 💗</div><div class="msg-note">Enviar 6-12 hrs después de que la charla muera.</div></div><button class="cp" data-copy="ay mor, estuve pensando en lo de antes... ¿estás libre? me gusta mucho hablar contigo 💗"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">RE-2</span><div class="msg-body"><div class="msg-text">me acordé de ti ahorita y me dieron ganas de escribirte ✨ ¿cómo estás, amor?</div><div class="msg-note">Enviar al día siguiente — reconectar emocional, no sexual.</div></div><button class="cp" data-copy="me acordé de ti ahorita y me dieron ganas de escribirte ✨ ¿cómo estás, amor?"><span class="cp-icon">📋</span></button></div>
+<div class="msg"><span class="msg-id">RE-3</span><div class="msg-body"><div class="msg-text">hola mor 🥰 vi algo hoy que me recordó a ti... te cuento?</div><div class="msg-note">Enviar 24-48 hrs después. Referencia a conversación anterior.</div></div><button class="cp" data-copy="hola mor 🥰 vi algo hoy que me recordó a ti... te cuento?"><span class="cp-icon">📋</span></button></div>
+  </div>
+</div>
+<hr class="divider">
+
+<div class="ref-section" id="nr-waves">
+  <div class="ref-title">🔇 Protocolo NR Waves</div>
+  <table class="nr-table"><thead><tr><th>Wave</th><th>Mensaje</th><th>Nota</th><th></th></tr></thead>
+  <tbody><tr><td><strong>NR-W1</strong></td><td>hola amor 💗</td><td class="nr-note">Enviar 2-3 min después del PPV. Ping suave.</td><td><button class="cp" data-copy="hola amor 💗"><span class="cp-icon">📋</span></button></td></tr><tr><td><strong>NR-W2</strong></td><td>ojalá pudieras ver cómo estoy ahorita, mor... ✨</td><td class="nr-note">Enviar 3-5 min después. Curiosidad.</td><td><button class="cp" data-copy="ojalá pudieras ver cómo estoy ahorita, mor... ✨"><span class="cp-icon">📋</span></button></td></tr><tr><td><strong>NR-W3</strong></td><td>bueno seguro estás ocupadito... lo guardo para cuando vuelvas 🥰</td><td class="nr-note">Enviar 5-10 min después. Takeaway suave.</td><td><button class="cp" data-copy="bueno seguro estás ocupadito... lo guardo para cuando vuelvas 🥰"><span class="cp-icon">📋</span></button></td></tr><tr><td><strong>NR-W4</strong></td><td>espero que estés bien amor, aquí estoy para ti siempre 💗</td><td class="nr-note">Enviar 15-30 min después. Cierre cálido. NUNCA decir cariño/cielo/bebé.</td><td><button class="cp" data-copy="espero que estés bien amor, aquí estoy para ti siempre 💗"><span class="cp-icon">📋</span></button></td></tr><tr><td><strong>NR-W5</strong></td><td>estuve pensando en ti todo el día... escríbeme cuando puedas, mor ✨</td><td class="nr-note">Enviar 2-6 hrs después. Nueva charla, no reintentar mismo PPV.</td><td><button class="cp" data-copy="estuve pensando en ti todo el día... escríbeme cuando puedas, mor ✨"><span class="cp-icon">📋</span></button></td></tr></tbody></table>
+</div>
+<hr class="divider">
+<div class="ref-section" id="personal-info">
+  <div class="ref-title">👤 Info Personal</div>
+  <div class="qi-grid"><div class="qi-item"><span class="qi-label">Edad</span><span class="qi-text">tengo 21, soy jovencita pero he vivido mucho... me tocó crecer rápido 💗</span><button class="cp" data-copy="tengo 21, soy jovencita pero he vivido mucho... me tocó crecer rápido 💗"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">Ubicación</span><span class="qi-text">soy de Venezuela pero vivo en Medellín, me vine solita a empezar de nuevo ✨</span><button class="cp" data-copy="soy de Venezuela pero vivo en Medellín, me vine solita a empezar de nuevo ✨"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">Origen</span><span class="qi-text">me crié en una finca, rodeada de naturaleza y animalitos... eso me hizo la persona que soy 🥰</span><button class="cp" data-copy="me crié en una finca, rodeada de naturaleza y animalitos... eso me hizo la persona que soy 🥰"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">Hobbies</span><span class="qi-text">me encanta entrenar, comer cositas ricas, cuidarme la piel y las uñas, ver peliculitas tranquilita 😍</span><button class="cp" data-copy="me encanta entrenar, comer cositas ricas, cuidarme la piel y las uñas, ver peliculitas tranquilita 😍"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">Animales</span><span class="qi-text">amo los caballos con toda mi alma, sueño con tener uno algún día ✨ y los sapos me dan pánico jaja</span><button class="cp" data-copy="amo los caballos con toda mi alma, sueño con tener uno algún día ✨ y los sapos me dan pánico jaja"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">Relación</span><span class="qi-text">estoy enfocada en mí ahorita, en crecer y en conectar con gente bonita como tú 💗</span><button class="cp" data-copy="estoy enfocada en mí ahorita, en crecer y en conectar con gente bonita como tú 💗"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">Familia</span><span class="qi-text">mi familia es lo más importante para mí, las personas más cercanas en mi vida son ellos ❤️</span><button class="cp" data-copy="mi familia es lo más importante para mí, las personas más cercanas en mi vida son ellos ❤️"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">VidaSocial</span><span class="qi-text">no soy de fiestas ni de salir mucho, prefiero espacios tranquilitos e íntimos ✨</span><button class="cp" data-copy="no soy de fiestas ni de salir mucho, prefiero espacios tranquilitos e íntimos ✨"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">Comida</span><span class="qi-text">ay me encanta comer, no te voy a mentir 😍 no soy rígida conmigo misma, me gusta disfrutar eso</span><button class="cp" data-copy="ay me encanta comer, no te voy a mentir 😍 no soy rígida conmigo misma, me gusta disfrutar eso"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">Piel</span><span class="qi-text">me gusta cuidarme mucho, mi piel, mis uñas, sentirme bonita... es como mi ratito conmigo misma 💗</span><button class="cp" data-copy="me gusta cuidarme mucho, mi piel, mis uñas, sentirme bonita... es como mi ratito conmigo misma 💗"><span class="cp-icon">📋</span></button></div></div>
+</div>
+<hr class="divider">
+<div class="ref-section" id="positive-spin">
+  <div class="ref-title">✨ Giro Positivo</div>
+  <div class="qi-grid"><div class="qi-item"><span class="qi-label">Edad40+</span><span class="qi-text">me encantan los hombres que ya saben lo que quieren, eso es atractivo de verdad 💗</span><button class="cp" data-copy="me encantan los hombres que ya saben lo que quieren, eso es atractivo de verdad 💗"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">Edad20s</span><span class="qi-text">ay estamos cerquita de edad, qué lindo ✨ eso es raro por aquí</span><button class="cp" data-copy="ay estamos cerquita de edad, qué lindo ✨ eso es raro por aquí"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">TrabajoNormal</span><span class="qi-text">eso está bonito, un hombre con su vida armada me parece muy atractivo 😍</span><button class="cp" data-copy="eso está bonito, un hombre con su vida armada me parece muy atractivo 😍"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">TrabajoCool</span><span class="qi-text">ay en serio? eso es increíble, cuéntame más mor 🥰</span><button class="cp" data-copy="ay en serio? eso es increíble, cuéntame más mor 🥰"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">Fitness</span><span class="qi-text">se nota que te cuidas, amor... me gusta mucho eso ✨</span><button class="cp" data-copy="se nota que te cuidas, amor... me gusta mucho eso ✨"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">NoFitness</span><span class="qi-text">a mí no me importa eso, lo que me gusta es la energía y la conexión real 💗</span><button class="cp" data-copy="a mí no me importa eso, lo que me gusta es la energía y la conexión real 💗"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">MismaCiudad</span><span class="qi-text">ay no, ¿también estás en Medellín? qué cosita tan bonita 😍</span><button class="cp" data-copy="ay no, ¿también estás en Medellín? qué cosita tan bonita 😍"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">Lejos</span><span class="qi-text">ay qué lejos... pero la conexión real no tiene distancia, amor 💗</span><button class="cp" data-copy="ay qué lejos... pero la conexión real no tiene distancia, amor 💗"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">Venezuela</span><span class="qi-text">¡eres venezolano también! ay qué bonito encontrar a alguien de casa por aquí 🥰</span><button class="cp" data-copy="¡eres venezolano también! ay qué bonito encontrar a alguien de casa por aquí 🥰"><span class="cp-icon">📋</span></button></div><div class="qi-item"><span class="qi-label">FootFetish</span><span class="qi-text">ay amor me encanta que eso te guste... tengo algo especial que enseñarte 😍</span><button class="cp" data-copy="ay amor me encanta que eso te guste... tengo algo especial que enseñarte 😍"><span class="cp-icon">📋</span></button></div></div>
+</div>
+<hr class="divider">
+<div style="text-align:center;padding:24px 0 10px;color:var(--muted);font-size:.73rem">CW ESP · Script Manager · 2026</div>
+
+</div>
+<button class="top-btn" id="top-btn">↑</button>
+
+<script>
+document.addEventListener('click',e=>{const b=e.target.closest('.cp');if(b){navigator.clipboard.writeText(b.dataset.copy).then(()=>{b.classList.add('ok');setTimeout(()=>b.classList.remove('ok'),1200)});return;}const ca=e.target.closest('.copy-all');if(ca){e.stopPropagation();const txt=ca.dataset.copyAll.replace(/\\n/g,'\n');navigator.clipboard.writeText(txt).then(()=>{ca.classList.add('ok');ca.textContent='Copiado!';setTimeout(()=>{ca.classList.remove('ok');ca.textContent='Copiar Todo'},1500)});return;}});
+document.querySelectorAll('.phase-header').forEach(h=>{h.addEventListener('click',e=>{if(e.target.closest('.cp')||e.target.closest('.copy-all'))return;h.closest('.phase').classList.toggle('collapsed')})});
+document.querySelectorAll('.toc a[href^="#"]').forEach(a=>{a.addEventListener('click',()=>{const t=document.getElementById(a.getAttribute('href').slice(1));if(t&&t.classList.contains('phase'))t.classList.remove('collapsed')})});
+const topBtn=document.getElementById('top-btn');
+window.addEventListener('scroll',()=>topBtn.classList.toggle('show',window.scrollY>400));
+topBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+const toc=document.getElementById('toc');
+window.addEventListener('scroll',()=>toc.classList.toggle('shadow',window.scrollY>200));
+const tocLinks=document.querySelectorAll('.toc a[href^="#"]');
+const sections=Array.from(tocLinks).map(a=>({link:a,el:document.getElementById(a.getAttribute('href').slice(1))})).filter(s=>s.el);
+function updateToc(){let a=sections[0];for(const s of sections)if(s.el.getBoundingClientRect().top<=100)a=s;tocLinks.forEach(l=>l.classList.remove('active'));if(a)a.link.classList.add('active')}
+window.addEventListener('scroll',updateToc);updateToc();
+const searchInput=document.getElementById('search');
+const searchCount=document.getElementById('search-count');
+searchInput.addEventListener('input',()=>{const q=searchInput.value.toLowerCase().trim();const msgs=document.querySelectorAll('.msg');const phases=document.querySelectorAll('.phase');if(!q){msgs.forEach(m=>{m.classList.remove('search-hide','search-match')});phases.forEach(p=>p.classList.remove('search-hide'));searchCount.textContent='';return;}let count=0;phases.forEach(p=>{let hasMatch=false;p.querySelectorAll('.msg').forEach(m=>{const txt=m.querySelector('.msg-text');if(txt&&txt.textContent.toLowerCase().includes(q)){m.classList.remove('search-hide');m.classList.add('search-match');hasMatch=true;count++;}else{m.classList.add('search-hide');m.classList.remove('search-match')}});if(hasMatch){p.classList.remove('search-hide','collapsed')}else{p.classList.add('search-hide')}});searchCount.textContent=count+' encontrados'});
+searchInput.addEventListener('keydown',e=>{if(e.key==='Escape'){searchInput.value='';searchInput.dispatchEvent(new Event('input'));searchInput.blur()}});
+</script>
+</body>
+</html>

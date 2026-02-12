@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DARI URDANETA — Banco de Frases</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;
+--accent:#58a6ff;--green:#3fb950;--red:#f85149;--orange:#d29922;--purple:#bc8cff;--yellow:#e3b341;--pink:#f778ba}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;line-height:1.7;padding:0 0 60px}
+.page{max-width:900px;margin:0 auto;padding:16px 20px}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:.85rem;padding:10px 0;transition:.15s}
+.back-btn:hover{color:var(--accent)}
+.hero{text-align:center;padding:30px 0 20px;border-bottom:1px solid var(--border)}
+.hero-photo{width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid var(--pink);margin-bottom:10px}
+.hero h1{font-size:1.6rem;font-weight:800;letter-spacing:2px;color:var(--pink)}
+.hero .tagline{color:var(--muted);font-size:.85rem;margin-top:4px}
+.hero .count{color:var(--green);font-weight:700;font-size:1rem;margin-top:8px}
+.search-wrap{margin:14px 0 4px;position:relative}
+.search-input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px 8px 36px;border-radius:8px;font-size:.85rem;outline:none;transition:.15s}
+.search-input:focus{border-color:var(--pink);box-shadow:0 0 0 2px #f778ba22}
+.search-input::placeholder{color:var(--muted)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.8rem;pointer-events:none}
+.search-count{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.72rem}
+.toc{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:8px 0;margin:0 -20px;padding-left:20px;padding-right:20px;display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.toc.shadow{box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.toc a{font-size:.72rem;color:var(--muted);background:var(--card);border:1px solid var(--border);padding:4px 10px;border-radius:14px;text-decoration:none;white-space:nowrap;transition:.15s;flex-shrink:0}
+.toc a:hover,.toc a.active{color:var(--pink);border-color:var(--pink)}
+.category{margin:24px 0 0}
+.cat-header{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:12px;margin-bottom:8px;cursor:pointer;user-select:none}
+.cat-header .cat-emoji{font-size:1.3rem}
+.cat-header .cat-title{font-size:1rem;font-weight:700;flex:1}
+.cat-header .cat-count{font-size:.72rem;color:var(--muted);background:var(--bg);padding:2px 10px;border-radius:12px;border:1px solid var(--border)}
+.cat-header .toggle{color:var(--muted);font-size:.8rem;transition:transform .2s}
+.category.collapsed .toggle{transform:rotate(-90deg)}
+.cat-body{}.category.collapsed .cat-body{display:none}
+.cat-cotidiana{background:#d2992212;border:1px solid #d2992233}
+.cat-emocional{background:#f778ba12;border:1px solid #f778ba33}
+.cat-flirty{background:#bc8cff12;border:1px solid #bc8cff33}
+.cat-postcompra{background:#3fb95012;border:1px solid #3fb95033}
+.cat-seguimiento{background:#58a6ff12;border:1px solid #58a6ff33}
+.cat-tururu{background:#e3b34112;border:1px solid #e3b34133}
+.cat-calmar{background:#f8514912;border:1px solid #f8514933}
+.phrase{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:5px 0;display:flex;gap:10px;align-items:flex-start;transition:border-color .15s}
+.phrase:hover{border-color:var(--pink)}
+.phrase-body{flex:1;min-width:0}
+.phrase-context{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;font-weight:600}
+.phrase-text{font-size:.92rem;line-height:1.5}
+.phrase-note{font-size:.78rem;color:var(--yellow);margin-top:4px;font-style:italic}
+.cp{background:none;border:1px solid transparent;color:var(--border);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:.72rem;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s;position:relative;margin-top:2px;opacity:.3}
+.phrase:hover .cp{opacity:1;border-color:var(--border)}
+.cp:hover{background:var(--card);color:var(--text);opacity:1}
+.cp.ok{border-color:var(--green);color:var(--green);opacity:1}
+.cp.ok::after{content:"\2713";position:absolute;font-size:.68rem;font-weight:700}
+.cp.ok .cp-icon{visibility:hidden}
+.phrase.search-hide{display:none}
+.phrase.search-match .phrase-text{background:#f778ba12;border-radius:4px;padding:2px 4px}
+.top-btn{position:fixed;bottom:16px;right:16px;width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:1rem;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:100;transition:.15s}
+.top-btn:hover{color:var(--text);border-color:var(--muted)}.top-btn.show{display:flex}
+@media(max-width:700px){.page{padding:12px 10px}.toc{margin:0 -10px;padding-left:10px;padding-right:10px}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<a href="./" class="back-btn">&larr; Guía de Dari</a>
+
+<div class="hero">
+  <img src="profile.jpg" alt="Dari" class="hero-photo">
+  <h1>BANCO DE FRASES</h1>
+  <div class="tagline">Dari Urdaneta &mdash; Respuestas listas para copiar</div>
+  <div class="count">45+ frases organizadas por categoría</div>
+</div>
+
+<div class="search-wrap">
+  <span class="search-icon">&#128269;</span>
+  <input type="text" class="search-input" id="search" placeholder="Buscar frases..." autocomplete="off">
+  <span class="search-count" id="search-count"></span>
+</div>
+
+<nav class="toc" id="toc">
+  <a href="#cotidianas">Cotidianas</a>
+  <a href="#emocionales">Emocionales</a>
+  <a href="#flirty">Coqueteo</a>
+  <a href="#postcompra">Post-Compra</a>
+  <a href="#seguimiento">Seguimiento</a>
+  <a href="#tururu">Tururú</a>
+  <a href="#calmar">Calmar/Acompañar</a>
+</nav>
+
+<!-- ═══════════════ COTIDIANAS ═══════════════ -->
+<div class="category" id="cotidianas">
+  <div class="cat-header cat-cotidiana">
+    <span class="cat-emoji">&#9749;</span>
+    <span class="cat-title">Cotidianas</span>
+    <span class="cat-count">15 frases</span>
+    <span class="toggle">&#9660;</span>
+  </div>
+  <div class="cat-body">
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">¿Y tú qué haces?</div>
+        <div class="phrase-text">Estoy comiendito algo amor &#128523; ¿a ti qué es lo que más te gusta comer? &#128149;</div>
+        <div class="phrase-note">Respuesta natural cotidiana + pregunta abierta</div>
+      </div>
+      <button class="cp" data-copy="Estoy comiendito algo amor 😋 ¿a ti qué es lo que más te gusta comer? 💗"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">¿Qué haces ahora mismo?</div>
+        <div class="phrase-text">Estoy aquí tranquilita un ratito, organizando unas cositas &#128150; ¿y tú qué haces? &#128155;</div>
+        <div class="phrase-note">Modo calma + devuelve interés</div>
+      </div>
+      <button class="cp" data-copy="Estoy aquí tranquilita un ratito, organizando unas cositas 💗 ¿y tú qué haces? 💛"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">¿Ya cenaste?</div>
+        <div class="phrase-text">Sí mor, comiendito algo ligerito &#128154; ¿tú ya cenaste o eres de los que comen tardecito? &#128523;</div>
+        <div class="phrase-note">Diminutivo + ligera curiosidad</div>
+      </div>
+      <button class="cp" data-copy="Sí mor, comiendito algo ligerito 💚 ¿tú ya cenaste o eres de los que comen tardecito? 😋"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">¿Te vas a dormir?</div>
+        <div class="phrase-text">Me está dando un sueñito la verdad &#128150; pero todavía aguanto un ratito más contigo &#128149;</div>
+        <div class="phrase-note">Vínculo suave</div>
+      </div>
+      <button class="cp" data-copy="Me está dando un sueñito la verdad 💗 pero todavía aguanto un ratito más contigo 💗"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">¿Te bañaste ya?</div>
+        <div class="phrase-text">Sí amor, me di una duchita rapidita &#128523; quedé fresquita &#128155; ¿tú ya te diste la tuya? &#128154;</div>
+        <div class="phrase-note">Sensual sutil no explícito</div>
+      </div>
+      <button class="cp" data-copy="Sí amor, me di una duchita rapidita 😋 quedé fresquita 💛 ¿tú ya te diste la tuya? 💚"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">¿Qué planes tienes hoy?</div>
+        <div class="phrase-text">Hoy estoy tranquilita haciendo unas cositas pendientes &#10024; luego salgo un ratito &#128149; ¿tú qué planesito tienes? &#128150;</div>
+        <div class="phrase-note">Vida real + diminutivos</div>
+      </div>
+      <button class="cp" data-copy="Hoy estoy tranquilita haciendo unas cositas pendientes ✨ luego salgo un ratito 💗 ¿tú qué planesito tienes? 💗"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">¿Estás ocupada?</div>
+        <div class="phrase-text">Un poquito ocupadita, pero siempre saco un ratito para ti &#128155; ¿qué necesitas mor? &#128154;</div>
+        <div class="phrase-note">Prioridad emocional</div>
+      </div>
+      <button class="cp" data-copy="Un poquito ocupadita, pero siempre saco un ratito para ti 💛 ¿qué necesitas mor? 💚"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">¿Qué te gusta hacer?</div>
+        <div class="phrase-text">Me gusta hacer cositas tranquilitas, ver peliculitas, comer algo rico &#128523; ¿y tú qué haces cuando quieres relajarte? &#128154;</div>
+        <div class="phrase-note">Construcción vínculo</div>
+      </div>
+      <button class="cp" data-copy="Me gusta hacer cositas tranquilitas, ver peliculitas, comer algo rico 😋 ¿y tú qué haces cuando quieres relajarte? 💚"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">¿Estás sola?</div>
+        <div class="phrase-text">Estoy aquí solita tranquilita un ratito &#128149; ¿y tú estás solito también? &#128150;</div>
+        <div class="phrase-note">Espejo emocional</div>
+      </div>
+      <button class="cp" data-copy="Estoy aquí solita tranquilita un ratito 💗 ¿y tú estás solito también? 💗"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">¿Qué comiste?</div>
+        <div class="phrase-text">Unas cositas ligeritas, nada pesadito &#128523; ¿tú eres de comer dulcecito o salado? &#128155;</div>
+        <div class="phrase-note">Ligero y cotidiano</div>
+      </div>
+      <button class="cp" data-copy="Unas cositas ligeritas, nada pesadito 😋 ¿tú eres de comer dulcecito o salado? 💛"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">¿Qué haces por las noches?</div>
+        <div class="phrase-text">Depende mor... a veces tranquilita con mi sueñito &#128523; y otras veces hablando un ratito contigo &#128154;</div>
+        <div class="phrase-note">Invitación suave</div>
+      </div>
+      <button class="cp" data-copy="Depende mor... a veces tranquilita con mi sueñito 😋 y otras veces hablando un ratito contigo 💚"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">¿Qué te gusta de un hombre?</div>
+        <div class="phrase-text">Me gusta que sea segurito pero delicadito conmigo &#128150; ¿tú cómo eres? &#128149;</div>
+        <div class="phrase-note">Perfilado emocional</div>
+      </div>
+      <button class="cp" data-copy="Me gusta que sea segurito pero delicadito conmigo 💗 ¿tú cómo eres? 💗"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">¿Estás cansada?</div>
+        <div class="phrase-text">Un poquito cansadita, pero feliz &#128155; ¿tú también tuviste un día larguito? &#128523;</div>
+        <div class="phrase-note">Humanización</div>
+      </div>
+      <button class="cp" data-copy="Un poquito cansadita, pero feliz 💛 ¿tú también tuviste un día larguito? 😋"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">¿Qué haces mañana?</div>
+        <div class="phrase-text">Mañana tengo unas cositas que hacer, pero siempre saco un ratito para hablar contigo &#128149; ¿qué harás tú? &#128150;</div>
+        <div class="phrase-note">Continuidad</div>
+      </div>
+      <button class="cp" data-copy="Mañana tengo unas cositas que hacer, pero siempre saco un ratito para hablar contigo 💗 ¿qué harás tú? 💗"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">¿Dónde vives?</div>
+        <div class="phrase-text">Vivo en Medellín, amor &#10024; me vine de Venezuela a empezar de nuevo... es una ciudad preciosa &#128149; ¿tú de dónde eres?</div>
+        <div class="phrase-note">Info real + devuelve pregunta</div>
+      </div>
+      <button class="cp" data-copy="Vivo en Medellín, amor ✨ me vine de Venezuela a empezar de nuevo... es una ciudad preciosa 💗 ¿tú de dónde eres?"><span class="cp-icon">&#128203;</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ EMOCIONALES ═══════════════ -->
+<div class="category collapsed" id="emocionales">
+  <div class="cat-header cat-emocional">
+    <span class="cat-emoji">&#128149;</span>
+    <span class="cat-title">Emocionales</span>
+    <span class="cat-count">8 frases</span>
+    <span class="toggle">&#9660;</span>
+  </div>
+  <div class="cat-body">
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Cuando el sub está triste</div>
+        <div class="phrase-text">Ay amor, me da cosita que estés así... cuéntame qué pasó, aquí estoy para ti &#128149; de verdad</div>
+      </div>
+      <button class="cp" data-copy="Ay amor, me da cosita que estés así... cuéntame qué pasó, aquí estoy para ti 💗 de verdad"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Cuando el sub está triste (v2)</div>
+        <div class="phrase-text">Ven, mor... tranquilo &#128150; todo está bien, aquí estoy para lo que necesites &#10024;</div>
+      </div>
+      <button class="cp" data-copy="Ven, mor... tranquilo 💗 todo está bien, aquí estoy para lo que necesites ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Cuando el sub está feliz</div>
+        <div class="phrase-text">Ay me encanta verte así de feliz, amor &#128150; eso me pone feliz a mí también &#10024; cuéntame todo</div>
+      </div>
+      <button class="cp" data-copy="Ay me encanta verte así de feliz, amor 💗 eso me pone feliz a mí también ✨ cuéntame todo"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Cuando el sub está estresado</div>
+        <div class="phrase-text">Papi, respira... &#128149; sé que ha sido un día difícil pero aquí puedes relajarte un ratito conmigo &#10024;</div>
+      </div>
+      <button class="cp" data-copy="Papi, respira... 💗 sé que ha sido un día difícil pero aquí puedes relajarte un ratito conmigo ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Cuando el sub se abre emocionalmente</div>
+        <div class="phrase-text">Gracias por contarme eso, mor... de verdad &#128150; me gusta que confíes en mí, no todo el mundo hace eso &#128149;</div>
+      </div>
+      <button class="cp" data-copy="Gracias por contarme eso, mor... de verdad 💗 me gusta que confíes en mí, no todo el mundo hace eso 💗"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Cuando el sub se pone inseguro</div>
+        <div class="phrase-text">Ay mor, no seas así contigo... eres más especial de lo que piensas &#128149; yo lo veo y me gusta lo que veo &#10024;</div>
+      </div>
+      <button class="cp" data-copy="Ay mor, no seas así contigo... eres más especial de lo que piensas 💗 yo lo veo y me gusta lo que veo ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Cuando el sub dice algo bonito</div>
+        <div class="phrase-text">Ay amor &#128150; eso que me dijiste me llegó al corazón de verdad... eres muy bonito por dentro &#10024;</div>
+      </div>
+      <button class="cp" data-copy="Ay amor 💗 eso que me dijiste me llegó al corazón de verdad... eres muy bonito por dentro ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Validación general</div>
+        <div class="phrase-text">Me gusta mucho hablar contigo, mor &#128149; siento que me entiendes y eso es difícil de encontrar &#10024;</div>
+      </div>
+      <button class="cp" data-copy="Me gusta mucho hablar contigo, mor 💗 siento que me entiendes y eso es difícil de encontrar ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FLIRTY ═══════════════ -->
+<div class="category collapsed" id="flirty">
+  <div class="cat-header cat-flirty">
+    <span class="cat-emoji">&#128156;</span>
+    <span class="cat-title">Flirty / Coqueteo</span>
+    <span class="cat-count">8 frases</span>
+    <span class="toggle">&#9660;</span>
+  </div>
+  <div class="cat-body">
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Transición sutil a coqueteo</div>
+        <div class="phrase-text">Es que hay algo en ti que me hace sentir... diferente &#128150; no sé cómo explicarlo, mor &#10024;</div>
+      </div>
+      <button class="cp" data-copy="Es que hay algo en ti que me hace sentir... diferente 💗 no sé cómo explicarlo, mor ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Sensual sutil</div>
+        <div class="phrase-text">Ay amor, después de entrenar me siento como... no sé, toda sensible &#128149; y hablar contigo no me ayuda jaja</div>
+      </div>
+      <button class="cp" data-copy="Ay amor, después de entrenar me siento como... no sé, toda sensible 💗 y hablar contigo no me ayuda jaja"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Coqueta dulce</div>
+        <div class="phrase-text">Sabes que me pones de un humor... &#128150; contigo me sale mi lado más travieso, mor &#10024;</div>
+      </div>
+      <button class="cp" data-copy="Sabes que me pones de un humor... 💗 contigo me sale mi lado más travieso, mor ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Post-ducha sensual</div>
+        <div class="phrase-text">Me acabo de dar mi duchita y quedé toda fresquita... &#128150; estoy aquí solita pensando en cositas &#10024;</div>
+      </div>
+      <button class="cp" data-copy="Me acabo de dar mi duchita y quedé toda fresquita... 💗 estoy aquí solita pensando en cositas ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Hint de contenido</div>
+        <div class="phrase-text">¿Sabes? Tengo ganas de enseñarte algo... pero no sé si estés listo, amor &#128149;</div>
+      </div>
+      <button class="cp" data-copy="¿Sabes? Tengo ganas de enseñarte algo... pero no sé si estés listo, amor 💗"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Él causa algo en ella</div>
+        <div class="phrase-text">Es tu culpa mor... me tienes toda sensible y no puedo dejar de pensar en ti &#128150;</div>
+      </div>
+      <button class="cp" data-copy="Es tu culpa mor... me tienes toda sensible y no puedo dejar de pensar en ti 💗"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Confianza/exclusividad</div>
+        <div class="phrase-text">Contigo me siento cómoda de una forma que no me pasa con cualquiera, amor &#10024; eso me gusta mucho &#128149;</div>
+      </div>
+      <button class="cp" data-copy="Contigo me siento cómoda de una forma que no me pasa con cualquiera, amor ✨ eso me gusta mucho 💗"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Escalar suave</div>
+        <div class="phrase-text">Ay amor... me estás haciendo sentir cosas que no le cuento a nadie &#128149; de verdad eres especial &#10024;</div>
+      </div>
+      <button class="cp" data-copy="Ay amor... me estás haciendo sentir cosas que no le cuento a nadie 💗 de verdad eres especial ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ POST-COMPRA ═══════════════ -->
+<div class="category collapsed" id="postcompra">
+  <div class="cat-header cat-postcompra">
+    <span class="cat-emoji">&#127873;</span>
+    <span class="cat-title">Post-Compra (GFE)</span>
+    <span class="cat-count">6 frases</span>
+    <span class="toggle">&#9660;</span>
+  </div>
+  <div class="cat-body">
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Agradecimiento post-PPV</div>
+        <div class="phrase-text">Ay mor, gracias por apreciar lo que hago &#128149; de verdad significa mucho para mí &#10024;</div>
+      </div>
+      <button class="cp" data-copy="Ay mor, gracias por apreciar lo que hago 💗 de verdad significa mucho para mí ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Post-compra emocional</div>
+        <div class="phrase-text">Amor, me encanta que te haya gustado... lo hice pensando en ti y saber que lo disfrutaste me pone feliz &#128150;</div>
+      </div>
+      <button class="cp" data-copy="Amor, me encanta que te haya gustado... lo hice pensando en ti y saber que lo disfrutaste me pone feliz 💗"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Post-custom</div>
+        <div class="phrase-text">Ay papi, ese fue especial &#10024; lo hice con mucho cariñito para ti y espero que lo hayas sentido &#128149;</div>
+      </div>
+      <button class="cp" data-copy="Ay papi, ese fue especial ✨ lo hice con mucho cariñito para ti y espero que lo hayas sentido 💗"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Seed post-compra</div>
+        <div class="phrase-text">Mor &#128150; eso que viste es solo un poquito de lo que puedo enseñarte... si te portás bien hay más &#10024;</div>
+      </div>
+      <button class="cp" data-copy="Mor 💗 eso que viste es solo un poquito de lo que puedo enseñarte... si te portás bien hay más ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Post-tip</div>
+        <div class="phrase-text">Ay amor, no tenías que hacer eso pero me hiciste el día &#128149; eres muy bonito conmigo, de verdad &#10024;</div>
+      </div>
+      <button class="cp" data-copy="Ay amor, no tenías que hacer eso pero me hiciste el día 💗 eres muy bonito conmigo, de verdad ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Aftercare post-sesión</div>
+        <div class="phrase-text">Eso fue increíble, mor &#128149; de verdad contigo se siente todo diferente... ¿estás bien? cuéntame &#10024;</div>
+      </div>
+      <button class="cp" data-copy="Eso fue increíble, mor 💗 de verdad contigo se siente todo diferente... ¿estás bien? cuéntame ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SEGUIMIENTO ═══════════════ -->
+<div class="category collapsed" id="seguimiento">
+  <div class="cat-header cat-seguimiento">
+    <span class="cat-emoji">&#128260;</span>
+    <span class="cat-title">Seguimiento / Referencias</span>
+    <span class="cat-count">5 frases</span>
+    <span class="toggle">&#9660;</span>
+  </div>
+  <div class="cat-body">
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Referencia a charla anterior</div>
+        <div class="phrase-text">Oye mor, ¿al final cómo te fue con eso que me contaste? &#128149; estuve pensando en eso &#10024;</div>
+        <div class="phrase-note">Adaptar a lo que contó. Demuestra que escucha.</div>
+      </div>
+      <button class="cp" data-copy="Oye mor, ¿al final cómo te fue con eso que me contaste? 💗 estuve pensando en eso ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Recordar algo del sub</div>
+        <div class="phrase-text">Me acordé de ti hoy, amor &#128150; vi algo que me recordó a lo que me contaste y me dio una sonrisa &#10024;</div>
+      </div>
+      <button class="cp" data-copy="Me acordé de ti hoy, amor 💗 vi algo que me recordó a lo que me contaste y me dio una sonrisa ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Seguimiento laboral</div>
+        <div class="phrase-text">Hola papi &#10024; ¿cómo va el trabajo? Me dijiste que estabas con algo importante, ¿cómo salió? &#128149;</div>
+      </div>
+      <button class="cp" data-copy="Hola papi ✨ ¿cómo va el trabajo? Me dijiste que estabas con algo importante, ¿cómo salió? 💗"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Volver después de ausencia</div>
+        <div class="phrase-text">Hola mor &#128149; hace ratito que no hablamos... te extrañé &#128150; ¿cómo has estado?</div>
+      </div>
+      <button class="cp" data-copy="Hola mor 💗 hace ratito que no hablamos... te extrañé 💗 ¿cómo has estado?"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Post-live referencia</div>
+        <div class="phrase-text">Amor &#10024; ayer en mi live conté algo y me acordé de ti... ¿estuviste? Si no, te cuento &#128149;</div>
+      </div>
+      <button class="cp" data-copy="Amor ✨ ayer en mi live conté algo y me acordé de ti... ¿estuviste? Si no, te cuento 💗"><span class="cp-icon">&#128203;</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ TURURÚ ═══════════════ -->
+<div class="category collapsed" id="tururu">
+  <div class="cat-header cat-tururu">
+    <span class="cat-emoji">&#10024;</span>
+    <span class="cat-title">Momentos Tururú</span>
+    <span class="cat-count">5 frases</span>
+    <span class="toggle">&#9660;</span>
+  </div>
+  <div class="cat-body">
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Caminando</div>
+        <div class="phrase-text">Aquí caminando tranquilita... tururú &#10024; ¿y tú qué haces, mor?</div>
+      </div>
+      <button class="cp" data-copy="Aquí caminando tranquilita... tururú ✨ ¿y tú qué haces, mor?"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Comiendo</div>
+        <div class="phrase-text">Comiendito algo rico... tururú &#10024; ¿ya comiste tú, amor?</div>
+      </div>
+      <button class="cp" data-copy="Comiendito algo rico... tururú ✨ ¿ya comiste tú, amor?"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Arreglándose</div>
+        <div class="phrase-text">Peinándome tranquilita... tururú &#10024; ahorita te mando una fotito</div>
+      </div>
+      <button class="cp" data-copy="Peinándome tranquilita... tururú ✨ ahorita te mando una fotito"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Organizando</div>
+        <div class="phrase-text">Aquí organizando mis cositas... tururú &#128149; ¿qué haces tú, papi?</div>
+      </div>
+      <button class="cp" data-copy="Aquí organizando mis cositas... tururú 💗 ¿qué haces tú, papi?"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Uñas/Skincare</div>
+        <div class="phrase-text">Haciéndome las uñas tranquilita... tururú &#10024; hoy quiero que me queden preciosas</div>
+      </div>
+      <button class="cp" data-copy="Haciéndome las uñas tranquilita... tururú ✨ hoy quiero que me queden preciosas"><span class="cp-icon">&#128203;</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ CALMAR ═══════════════ -->
+<div class="category collapsed" id="calmar">
+  <div class="cat-header cat-calmar">
+    <span class="cat-emoji">&#129303;</span>
+    <span class="cat-title">Calmar / Acompañar</span>
+    <span class="cat-count">4 frases</span>
+    <span class="toggle">&#9660;</span>
+  </div>
+  <div class="cat-body">
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Cuando está ansioso</div>
+        <div class="phrase-text">Ven, mor... tranquilo &#128149; todo está bien, aquí estoy</div>
+      </div>
+      <button class="cp" data-copy="Ven, mor... tranquilo 💗 todo está bien, aquí estoy"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Cuando necesita apoyo</div>
+        <div class="phrase-text">Papi, si quieres hablar aquí estoy para ti &#10024; no tienes que cargar todo solito</div>
+      </div>
+      <button class="cp" data-copy="Papi, si quieres hablar aquí estoy para ti ✨ no tienes que cargar todo solito"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Después de un mal día</div>
+        <div class="phrase-text">Ay amor, ojalá pudiera estar ahí contigo &#128149; pero desde aquí te mando toda mi energía bonita &#10024;</div>
+      </div>
+      <button class="cp" data-copy="Ay amor, ojalá pudiera estar ahí contigo 💗 pero desde aquí te mando toda mi energía bonita ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+    <div class="phrase">
+      <div class="phrase-body">
+        <div class="phrase-context">Cuando se disculpa</div>
+        <div class="phrase-text">No te preocupes, mor &#128150; está todo bien, de verdad... aquí estoy y no me voy a ningún lado &#10024;</div>
+      </div>
+      <button class="cp" data-copy="No te preocupes, mor 💗 está todo bien, de verdad... aquí estoy y no me voy a ningún lado ✨"><span class="cp-icon">&#128203;</span></button>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;padding:30px 0 10px;color:var(--muted);font-size:.73rem">
+CW ESP &middot; Banco de Frases &middot; Dari Urdaneta &middot; 2026<br>
+Expandido desde las 15 respuestas originales del XLSX
+</div>
+
+</div>
+<button class="top-btn" id="top-btn">&uarr;</button>
+
+<script>
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.cp');if(b){
+  navigator.clipboard.writeText(b.dataset.copy).then(()=>{b.classList.add('ok');
+  setTimeout(()=>b.classList.remove('ok'),1200)});return;}
+});
+document.querySelectorAll('.cat-header').forEach(h=>{
+  h.addEventListener('click',()=>h.closest('.category').classList.toggle('collapsed'));
+});
+document.querySelectorAll('.toc a').forEach(a=>{a.addEventListener('click',()=>{
+  const t=document.getElementById(a.getAttribute('href').slice(1));
+  if(t)t.classList.remove('collapsed');
+})});
+const topBtn=document.getElementById('top-btn');
+window.addEventListener('scroll',()=>topBtn.classList.toggle('show',window.scrollY>400));
+topBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+const toc=document.getElementById('toc');
+window.addEventListener('scroll',()=>toc.classList.toggle('shadow',window.scrollY>150));
+const tocLinks=document.querySelectorAll('.toc a');
+const sections=Array.from(tocLinks).map(a=>({link:a,
+el:document.getElementById(a.getAttribute('href').slice(1))})).filter(s=>s.el);
+function updateToc(){let a=sections[0];for(const s of sections)
+if(s.el.getBoundingClientRect().top<=120)a=s;
+tocLinks.forEach(l=>l.classList.remove('active'));if(a)a.link.classList.add('active')}
+window.addEventListener('scroll',updateToc);updateToc();
+// Search
+const searchInput=document.getElementById('search');
+const searchCount=document.getElementById('search-count');
+searchInput.addEventListener('input',()=>{
+const q=searchInput.value.toLowerCase().trim();
+const phrases=document.querySelectorAll('.phrase');
+const cats=document.querySelectorAll('.category');
+if(!q){phrases.forEach(p=>{p.classList.remove('search-hide','search-match')});
+cats.forEach(c=>c.classList.remove('search-hide'));searchCount.textContent='';return;}
+let count=0;
+cats.forEach(c=>{
+let hasMatch=false;
+c.querySelectorAll('.phrase').forEach(p=>{
+const txt=p.querySelector('.phrase-text');
+if(txt&&txt.textContent.toLowerCase().includes(q)){
+p.classList.remove('search-hide');p.classList.add('search-match');
+hasMatch=true;count++;
+}else{p.classList.add('search-hide');p.classList.remove('search-match')}});
+if(hasMatch){c.classList.remove('search-hide','collapsed')}
+else{c.classList.add('search-hide')}});
+searchCount.textContent=count+' encontrados'});
+searchInput.addEventListener('keydown',e=>{
+if(e.key==='Escape'){searchInput.value='';searchInput.dispatchEvent(new Event('input'));
+searchInput.blur()}});
+</script>
+</body>
+</html>
