@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CW ESP Scripts — Script Manager</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0d1117; color: #e6edf3; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+  .header { text-align: center; padding: 50px 20px 30px; }
+  .header h1 { font-size: 2.2em; color: #58a6ff; margin-bottom: 8px; }
+  .header p { color: #8b949e; font-size: 1em; max-width: 500px; margin: 0 auto; }
+  .header .count { color: #3fb950; font-weight: 700; font-size: 1.1em; margin-top: 8px; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+  .section-title { font-size: 1.1em; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; margin: 40px 0 16px 0; padding-bottom: 8px; border-bottom: 1px solid #21262d; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; transition: all 0.2s; }
+  .card:hover { border-color: #58a6ff; box-shadow: 0 4px 20px rgba(88,166,255,0.1); }
+  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .card-name { font-size: 1.3em; font-weight: 700; }
+  .card-badge { font-size: 0.7em; padding: 3px 10px; border-radius: 20px; font-weight: 600; text-transform: uppercase; }
+  .badge-live { background: #3fb95022; color: #3fb950; border: 1px solid #3fb95044; }
+  .card-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .meta-tag { font-size: 0.75em; color: #8b949e; background: #1c2129; padding: 2px 8px; border-radius: 4px; }
+  .card-traffic { font-size: 0.85em; color: #8b949e; margin-bottom: 8px; }
+  .card-traffic strong { color: #e6edf3; }
+  .card-actions { display: flex; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #21262d; }
+  .btn-guide, .btn-xlsx { flex: 1; text-align: center; padding: 7px 10px; border-radius: 8px; font-size: 0.75em; font-weight: 600; text-decoration: none; transition: all 0.2s; }
+  .btn-guide { background: #58a6ff22; color: #58a6ff; border: 1px solid #58a6ff44; }
+  .btn-guide:hover { background: #58a6ff33; }
+  .btn-xlsx { background: #3fb95022; color: #3fb950; border: 1px solid #3fb95044; }
+  .btn-xlsx:hover { background: #3fb95033; }
+  .footer { text-align: center; padding: 50px 20px; color: #484f58; font-size: 0.8em; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .header h1 { font-size: 1.6em; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>CW ESP Scripts</h1>
+  <p>Guías de scripts para chatters — CW ESP</p>
+  <div class="count">1 creadora activa</div>
+</div>
+
+<div class="container">
+
+  <div class="section-title">Creadoras (1)</div>
+  <div class="grid">
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-name">Ailen Free</span>
+        <span class="card-badge badge-live">LIVE</span>
+      </div>
+      <div class="card-meta">
+        <span class="meta-tag">29 años</span>
+        <span class="meta-tag">Argentina</span>
+        <span class="meta-tag">Página gratuita</span>
+      </div>
+      <div class="card-traffic">Tráfico: <strong>Social Media</strong></div>
+      <div class="card-actions">
+        <a href="ailen-free/" class="btn-guide">📖 Guía</a>
+        <a href="ailen-free/objections.html" class="btn-guide" style="background:#f8514922;color:#f85149;border-color:#f8514944">🛡️ OBJ/RES</a>
+        <a href="ailen-free/Ailen_Complete_Infloww.xlsx" download class="btn-xlsx">📥 XLSX</a>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="footer">
+  CW ESP — Script Manager — 2026<br>
+  Uso interno
+</div>
+
+</body>
+</html>

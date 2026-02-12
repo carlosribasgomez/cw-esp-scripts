@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AILEN — Manejo de Objeciones y Resistencias</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--green:#3fb950;--red:#f85149;--orange:#d29922;--purple:#bc8cff;--yellow:#e3b341}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;line-height:1.6;padding:0 0 60px}
+.page{max-width:960px;margin:0 auto;padding:16px 20px}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:.85rem;padding:10px 0;transition:.15s}
+.back-btn:hover{color:var(--accent)}
+.hero{display:flex;align-items:center;gap:18px;padding:20px 0 16px;border-bottom:1px solid var(--border)}
+.hero-photo{width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid var(--accent);flex-shrink:0}
+.hero h1{font-size:1.5rem;font-weight:800;letter-spacing:2px}
+.hero .tagline{color:var(--muted);font-size:.82rem}
+.info-bar{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 4px;font-size:.78rem}
+.info-pill{background:var(--card);border:1px solid var(--border);padding:4px 12px;border-radius:20px;display:flex;align-items:center;gap:5px;color:var(--muted)}
+.info-pill b{color:var(--text)}
+.toc{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);padding:8px 0;margin:0 -20px;padding-left:20px;padding-right:20px;display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.toc.shadow{box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.toc a{font-size:.7rem;color:var(--muted);background:var(--card);border:1px solid var(--border);padding:4px 10px;border-radius:14px;text-decoration:none;white-space:nowrap;transition:.15s;flex-shrink:0}
+.toc a:hover,.toc a.active{color:var(--accent);border-color:var(--accent)}
+.toc a.toc-obj{color:var(--red);border-color:#f8514933}
+.toc a.toc-res{color:var(--purple);border-color:#bc8cff33}
+.toc a.toc-sit{color:var(--green);border-color:#3fb95033}
+.cat-header{margin:28px 0 8px;padding:14px 18px;border-radius:12px;display:flex;align-items:center;gap:12px}
+.cat-header.cat-obj{background:#f8514912;border:1px solid #f8514933}
+.cat-header.cat-res{background:#bc8cff12;border:1px solid #bc8cff33}
+.cat-header.cat-sit{background:#3fb95012;border:1px solid #3fb95033}
+.cat-header .cat-emoji{font-size:1.4rem}.cat-header .cat-info{flex:1}
+.cat-header h2{font-size:1.1rem;font-weight:700}
+.cat-header p{font-size:.8rem;color:var(--muted)}
+.protocol{background:var(--card);border:1px solid var(--border);border-radius:12px;margin:12px 0;overflow:hidden}
+.protocol-header{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;user-select:none;transition:background .12s}
+.protocol-header:hover{background:#1c2129}
+.protocol-header .p-name{font-size:.95rem;font-weight:600;flex:1}
+.protocol-header .p-meta{font-size:.72rem;color:var(--muted);background:var(--bg);padding:2px 8px;border-radius:10px;border:1px solid var(--border)}
+.protocol-header .toggle{color:var(--muted);font-size:.8rem;transition:transform .2s}
+.protocol.collapsed .toggle{transform:rotate(-90deg)}
+.protocol-body{padding:6px 0 12px}.protocol.collapsed .protocol-body{display:none}
+.seq-tabs{display:flex;gap:6px;padding:8px 16px}
+.seq-tab{font-size:.76rem;font-weight:700;padding:4px 12px;border-radius:8px;cursor:pointer;border:1px solid var(--border);color:var(--muted);background:var(--bg);transition:.15s}
+.seq-tab:hover{border-color:var(--accent);color:var(--accent)}
+.seq-tab.active{background:var(--accent);color:#0d1117;border-color:var(--accent)}
+.seq-panel{display:none}.seq-panel.active{display:block}
+.step{display:flex;gap:10px;padding:6px 16px;align-items:flex-start;margin:3px 0}
+.step-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;margin-top:3px;background:#8b949e14;color:var(--muted);border:1px solid var(--border)}
+.step-body{flex:1;min-width:0}
+.step-technique{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;color:var(--muted)}
+.step-msg{font-size:.95rem;line-height:1.5;padding:7px 11px;background:var(--bg);border:1px solid var(--border);border-radius:10px;word-wrap:break-word}
+.step-note{background:#e3b34112;border-left:3px solid var(--yellow);padding:4px 10px;border-radius:0 6px 6px 0;margin:4px 0 2px;font-size:.76rem;color:var(--yellow)}
+.cp{background:none;border:1px solid transparent;color:var(--border);width:24px;height:24px;border-radius:6px;cursor:pointer;font-size:.7rem;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s;position:relative;margin-top:7px;opacity:.3}
+.step:hover .cp{opacity:1;border-color:var(--border)}
+.cp:hover{background:var(--card);color:var(--text);opacity:1}
+.cp.ok{border-color:var(--green);color:var(--green);opacity:1}
+.cp.ok::after{content:"\2713";position:absolute;font-size:.68rem;font-weight:700}
+.cp.ok .cp-icon{visibility:hidden}
+.top-btn{position:fixed;bottom:16px;right:16px;width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:1rem;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:100;transition:.15s}
+.top-btn:hover{color:var(--text);border-color:var(--muted)}.top-btn.show{display:flex}
+@media(max-width:700px){.page{padding:12px 10px}.hero{flex-direction:column;text-align:center}.toc{margin:0 -10px;padding-left:10px;padding-right:10px}.info-bar{justify-content:center}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<a href="./" class="back-btn">← Guía de Ailen</a>
+
+<div class="hero">
+  <img src="profile.jpg" alt="Ailen" class="hero-photo">
+  <div>
+    <h1>AILEN — Objeciones y Resistencias</h1>
+    <div class="tagline">Secuencias completas para Infloww</div>
+  </div>
+</div>
+
+<div class="info-bar">
+  <span class="info-pill"><b>30</b> hojas</span>
+  <span class="info-pill"><b>116</b> scripts</span>
+  <span class="info-pill"><b>16</b> protocolos</span>
+</div>
+
+<nav class="toc" id="toc">
+  <a href="#price" class="toc-obj">Price</a>
+  <a href="#discount" class="toc-obj">Discount</a>
+  <a href="#free" class="toc-obj">Free</a>
+  <a href="#nomoney" class="toc-obj">Nomoney</a>
+  <a href="#noppv" class="toc-obj">Noppv</a>
+  <a href="#card" class="toc-obj">Card</a>
+  <a href="#nosex" class="toc-res">Nosex</a>
+  <a href="#offtopic" class="toc-res">Offtopic</a>
+  <a href="#real" class="toc-res">Real</a>
+  <a href="#voice" class="toc-res">Voice</a>
+  <a href="#customyes" class="toc-res">Customyes</a>
+  <a href="#customno" class="toc-res">Customno</a>
+  <a href="#done" class="toc-res">Done</a>
+  <a href="#cumcontrol" class="toc-sit">Cumcontrol</a>
+  <a href="#dickpic" class="toc-sit">Dickpic</a>
+  <a href="#boosters" class="toc-sit">Boosters</a>
+</nav>
+
+<div class="cat-header cat-obj"><span class="cat-emoji">💰</span><div class="cat-info"><h2>A. Manejo de Objeciones</h2><p>6 protocolos</p></div></div>
+<div class="protocol" id="price">
+  <div class="protocol-header"><span class="p-name">Price</span><span class="p-meta">5 pasos · 2 seq</span><span class="toggle">▼</span></div>
+  <div class="protocol-body">
+    <div class="seq-tabs"><div class="seq-tab active" data-seq="price1"><code>\price1</code></div><div class="seq-tab" data-seq="price2"><code>\price2</code></div></div>
+<div class="seq-panel active" id="price1">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Reframe</div><div class="step-msg">nene eso es menos que un café y te prometo que esto pega mucho más fuerte</div><div class="step-note">REFRAME. Esperar. Sigue no → Step 2.</div></div><button class="cp" data-copy="nene eso es menos que un café y te prometo que esto pega mucho más fuerte"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 FOMO</div><div class="step-msg">estoy así de caliente solamente por vos ahora, no sé cuándo me va a pasar de nuevo</div><div class="step-note">FOMO. Sigue no → Step 3.</div></div><button class="cp" data-copy="estoy así de caliente solamente por vos ahora, no sé cuándo me va a pasar de nuevo"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Challenge</div><div class="step-msg">capaz no estás listo para lo que hice en este</div><div class="step-note">CHALLENGE. Sigue no → Step 4.</div></div><button class="cp" data-copy="capaz no estás listo para lo que hice en este"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">4</span><div class="step-body"><div class="step-technique">Step4 Downgrade</div><div class="step-msg">mirá te dejo [precio menor] solo para vos porque esta charla fue algo diferente</div><div class="step-note">DOWNGRADE 20-30%. UNA VEZ. Sigue no → Step 5.</div></div><button class="cp" data-copy="mirá te dejo [precio menor] solo para vos porque esta charla fue algo diferente"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">5</span><div class="step-body"><div class="step-technique">Step5 Seed</div><div class="step-msg">está bien mi amor, sigamos hablando... sigo pensando en vos</div><div class="step-note">SEED. Continuar GFE.</div></div><button class="cp" data-copy="está bien mi amor, sigamos hablando... sigo pensando en vos"><span class="cp-icon">📋</span></button></div>
+</div>
+<div class="seq-panel" id="price2">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Reframe</div><div class="step-msg">es lo que gastarías en un almuerzo y esto te va a dejar despierto toda la noche nene</div><div class="step-note">REFRAME. Sigue no → Step 2.</div></div><button class="cp" data-copy="es lo que gastarías en un almuerzo y esto te va a dejar despierto toda la noche nene"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 FOMO</div><div class="step-msg">este humor no me dura para siempre y quiero que vos seas el que lo vea</div><div class="step-note">FOMO. Sigue no → Step 3.</div></div><button class="cp" data-copy="este humor no me dura para siempre y quiero que vos seas el que lo vea"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Challenge</div><div class="step-msg">la mayoría de los pibes no podrían con lo que acabo de hacer, pensé que vos eras diferente</div><div class="step-note">CHALLENGE. Sigue no → Step 4.</div></div><button class="cp" data-copy="la mayoría de los pibes no podrían con lo que acabo de hacer, pensé que vos eras diferente"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">4</span><div class="step-body"><div class="step-technique">Step4 Downgrade</div><div class="step-msg">dale [precio menor] porque me estás haciendo sentir cosas, pero queda entre nosotros</div><div class="step-note">DOWNGRADE. UNA VEZ. Sigue no → Step 5.</div></div><button class="cp" data-copy="dale [precio menor] porque me estás haciendo sentir cosas, pero queda entre nosotros"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">5</span><div class="step-body"><div class="step-technique">Step5 Seed</div><div class="step-msg">sin presión nene, me gusta hablar con vos y ya</div><div class="step-note">SEED.</div></div><button class="cp" data-copy="sin presión nene, me gusta hablar con vos y ya"><span class="cp-icon">📋</span></button></div>
+</div>
+  </div>
+</div>
+<div class="protocol collapsed" id="discount">
+  <div class="protocol-header"><span class="p-name">Discount</span><span class="p-meta">4 pasos · 2 seq</span><span class="toggle">▼</span></div>
+  <div class="protocol-body">
+    <div class="seq-tabs"><div class="seq-tab active" data-seq="discount1"><code>\discount1</code></div><div class="seq-tab" data-seq="discount2"><code>\discount2</code></div></div>
+<div class="seq-panel active" id="discount1">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Firmness</div><div class="step-msg">jaja estás tratando de negociar conmigo? esto no es una negociación lindo, vale cada centavo</div><div class="step-note">FIRMEZA. Sigue insistiendo → Step 2.</div></div><button class="cp" data-copy="jaja estás tratando de negociar conmigo? esto no es una negociación lindo, vale cada centavo"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Challenge</div><div class="step-msg">no hago descuentos... solo comparto esto con tipos que de verdad aprecian lo que reciben</div><div class="step-note">CHALLENGE. Sigue → Step 3.</div></div><button class="cp" data-copy="no hago descuentos... solo comparto esto con tipos que de verdad aprecian lo que reciben"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Concession</div><div class="step-msg">bueno [precio menor] solo para vos pero no le cuentes a nadie, queda entre nosotros nene</div><div class="step-note">CONCESIÓN. UNA VEZ. Sigue no → Step 4.</div></div><button class="cp" data-copy="bueno [precio menor] solo para vos pero no le cuentes a nadie, queda entre nosotros nene"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">4</span><div class="step-body"><div class="step-technique">Step4 Takeaway</div><div class="step-msg">si no lo querés está bien, me lo quedo para mí... o capaz para alguien que me lo está pidiendo</div><div class="step-note">TAKEAWAY. Final.</div></div><button class="cp" data-copy="si no lo querés está bien, me lo quedo para mí... o capaz para alguien que me lo está pidiendo"><span class="cp-icon">📋</span></button></div>
+</div>
+<div class="seq-panel" id="discount2">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Firmness</div><div class="step-msg">un descuento? te parece que estoy en oferta nene?</div><div class="step-note">FIRMEZA. Sigue → Step 2.</div></div><button class="cp" data-copy="un descuento? te parece que estoy en oferta nene?"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Challenge</div><div class="step-msg">los pibes que aprecian lo que hago nunca piden descuento, digo nomás</div><div class="step-note">CHALLENGE. Sigue → Step 3.</div></div><button class="cp" data-copy="los pibes que aprecian lo que hago nunca piden descuento, digo nomás"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Concession</div><div class="step-msg">bueno [precio menor] pero SOLO porque me caés bien, una sola vez</div><div class="step-note">CONCESIÓN. UNA VEZ. Sigue no → Step 4.</div></div><button class="cp" data-copy="bueno [precio menor] pero SOLO porque me caés bien, una sola vez"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">4</span><div class="step-body"><div class="step-technique">Step4 Takeaway</div><div class="step-msg">bueno me lo guardo para alguien que sí lo quiera entonces</div><div class="step-note">TAKEAWAY.</div></div><button class="cp" data-copy="bueno me lo guardo para alguien que sí lo quiera entonces"><span class="cp-icon">📋</span></button></div>
+</div>
+  </div>
+</div>
+<div class="protocol collapsed" id="free">
+  <div class="protocol-header"><span class="p-name">Free</span><span class="p-meta">4 pasos · 2 seq</span><span class="toggle">▼</span></div>
+  <div class="protocol-body">
+    <div class="seq-tabs"><div class="seq-tab active" data-seq="free1"><code>\free1</code></div><div class="seq-tab" data-seq="free2"><code>\free2</code></div></div>
+<div class="seq-panel active" id="free1">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Reminder</div><div class="step-msg">ya te mandé uno gratis te acordás? este es mucho más heavy nene</div><div class="step-note">RECORDATORIO. Sigue queriendo gratis → Step 2.</div></div><button class="cp" data-copy="ya te mandé uno gratis te acordás? este es mucho más heavy nene"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Challenge</div><div class="step-msg">gratis? nah yo no muestro esto a cualquiera... tenés que ganarte lo bueno</div><div class="step-note">CHALLENGE. Sigue → Step 3.</div></div><button class="cp" data-copy="gratis? nah yo no muestro esto a cualquiera... tenés que ganarte lo bueno"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Guilt</div><div class="step-msg">literalmente hice esto por lo que VOS me dijiste, no fue contenido random</div><div class="step-note">CULPA. Sigue no → Step 4.</div></div><button class="cp" data-copy="literalmente hice esto por lo que VOS me dijiste, no fue contenido random"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">4</span><div class="step-body"><div class="step-technique">Step4 Seed</div><div class="step-msg">está bien lindo, no me voy a ir a ningún lado... sigamos hablando</div><div class="step-note">SEED.</div></div><button class="cp" data-copy="está bien lindo, no me voy a ir a ningún lado... sigamos hablando"><span class="cp-icon">📋</span></button></div>
+</div>
+<div class="seq-panel" id="free2">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Reminder</div><div class="step-msg">ya tuviste uno gratis, este está a otro nivel</div><div class="step-note">RECORDATORIO. Sigue → Step 2.</div></div><button class="cp" data-copy="ya tuviste uno gratis, este está a otro nivel"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Challenge</div><div class="step-msg">gratis? de verdad pensás que las mejores cosas de la vida son gratis? esto no nene</div><div class="step-note">CHALLENGE. Sigue → Step 3.</div></div><button class="cp" data-copy="gratis? de verdad pensás que las mejores cosas de la vida son gratis? esto no nene"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Guilt</div><div class="step-msg">hice esto por vos... específicamente por nuestra charla, eso me costó esfuerzo y lo hice POR VOS</div><div class="step-note">CULPA. Sigue no → Step 4.</div></div><button class="cp" data-copy="hice esto por vos... específicamente por nuestra charla, eso me costó esfuerzo y lo hice POR VOS"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">4</span><div class="step-body"><div class="step-technique">Step4 Seed</div><div class="step-msg">sin presión para nada, me gusta hablar con vos posta</div><div class="step-note">SEED.</div></div><button class="cp" data-copy="sin presión para nada, me gusta hablar con vos posta"><span class="cp-icon">📋</span></button></div>
+</div>
+  </div>
+</div>
+<div class="protocol collapsed" id="nomoney">
+  <div class="protocol-header"><span class="p-name">Nomoney</span><span class="p-meta">4 pasos · 2 seq</span><span class="toggle">▼</span></div>
+  <div class="protocol-body">
+    <div class="seq-tabs"><div class="seq-tab active" data-seq="nomoney1"><code>\nomoney1</code></div><div class="seq-tab" data-seq="nomoney2"><code>\nomoney2</code></div></div>
+<div class="seq-panel active" id="nomoney1">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Empathy</div><div class="step-msg">che te re entiendo, sin presión para nada dale?</div><div class="step-note">EMPATÍA. Sigue enganchado → Step 2.</div></div><button class="cp" data-copy="che te re entiendo, sin presión para nada dale?"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Test</div><div class="step-msg">ni siquiera como [monto chico]? re quiero que veas esto nene</div><div class="step-note">TEST. $3-5. Sigue no → Step 3.</div></div><button class="cp" data-copy="ni siquiera como [monto chico]? re quiero que veas esto nene"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 PWYW</div><div class="step-msg">mandame lo que puedas, aunque sea poquito, necesito que veas lo que me hiciste hacer</div><div class="step-note">PWYW. Sigue no → Step 4.</div></div><button class="cp" data-copy="mandame lo que puedas, aunque sea poquito, necesito que veas lo que me hiciste hacer"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">4</span><div class="step-body"><div class="step-technique">Step4 Protect</div><div class="step-msg">posta está bien, me gusta hablar con vos con plata o sin ella... me hacés algo</div><div class="step-note">PROTEGER. GFE.</div></div><button class="cp" data-copy="posta está bien, me gusta hablar con vos con plata o sin ella... me hacés algo"><span class="cp-icon">📋</span></button></div>
+</div>
+<div class="seq-panel" id="nomoney2">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Empathy</div><div class="step-msg">está todo bien nene, en serio no te preocupes</div><div class="step-note">EMPATÍA. Sigue → Step 2.</div></div><button class="cp" data-copy="está todo bien nene, en serio no te preocupes"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Test</div><div class="step-msg">y si es solo [monto chico]? de verdad no quiero que te pierdas esto</div><div class="step-note">TEST. Sigue no → Step 3.</div></div><button class="cp" data-copy="y si es solo [monto chico]? de verdad no quiero que te pierdas esto"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 PWYW</div><div class="step-msg">mandame lo que te parezca bien, aunque sea $1... no puedo guardarte esto</div><div class="step-note">PWYW. Sigue no → Step 4.</div></div><button class="cp" data-copy="mandame lo que te parezca bien, aunque sea $1... no puedo guardarte esto"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">4</span><div class="step-body"><div class="step-technique">Step4 Protect</div><div class="step-msg">está re bien, que estés acá es lo que me importa</div><div class="step-note">PROTEGER.</div></div><button class="cp" data-copy="está re bien, que estés acá es lo que me importa"><span class="cp-icon">📋</span></button></div>
+</div>
+  </div>
+</div>
+<div class="protocol collapsed" id="noppv">
+  <div class="protocol-header"><span class="p-name">Noppv</span><span class="p-meta">3 pasos · 2 seq</span><span class="toggle">▼</span></div>
+  <div class="protocol-body">
+    <div class="seq-tabs"><div class="seq-tab active" data-seq="noppv1"><code>\noppv1</code></div><div class="seq-tab" data-seq="noppv2"><code>\noppv2</code></div></div>
+<div class="seq-panel active" id="noppv1">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Accept</div><div class="step-msg">está todo bien, no te estoy tratando de vender nada, me gusta hablar con vos</div><div class="step-note">ACEPTAR. Continuar sexting 4-5 msgs antes de Step 2.</div></div><button class="cp" data-copy="está todo bien, no te estoy tratando de vender nada, me gusta hablar con vos"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Reframe</div><div class="step-msg">mirá esto no es por plata... necesito que veas lo que me estás haciendo ahora, no reacciono así con la gente</div><div class="step-note">REFRAME. Sigue no → Step 3.</div></div><button class="cp" data-copy="mirá esto no es por plata... necesito que veas lo que me estás haciendo ahora, no reacciono así con la gente"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 PWYW</div><div class="step-msg">mandame lo que quieras, aunque sea $1, no me puedo guardar esto... necesitás verlo nene</div><div class="step-note">PWYW.</div></div><button class="cp" data-copy="mandame lo que quieras, aunque sea $1, no me puedo guardar esto... necesitás verlo nene"><span class="cp-icon">📋</span></button></div>
+</div>
+<div class="seq-panel" id="noppv2">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Accept</div><div class="step-msg">no pasa nada lindo, no me importa eso, estoy disfrutando esto</div><div class="step-note">ACEPTAR. Continuar sexting 4-5 msgs antes de Step 2.</div></div><button class="cp" data-copy="no pasa nada lindo, no me importa eso, estoy disfrutando esto"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Reframe</div><div class="step-msg">olvidate de la plata un segundo... solo quiero compartir esto con vos, lo que me estás haciendo sentir es real</div><div class="step-note">REFRAME. Sigue no → Step 3.</div></div><button class="cp" data-copy="olvidate de la plata un segundo... solo quiero compartir esto con vos, lo que me estás haciendo sentir es real"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 PWYW</div><div class="step-msg">mandame lo que sea, lo más mínimo, necesito que veas lo que me hiciste</div><div class="step-note">PWYW.</div></div><button class="cp" data-copy="mandame lo que sea, lo más mínimo, necesito que veas lo que me hiciste"><span class="cp-icon">📋</span></button></div>
+</div>
+  </div>
+</div>
+<div class="protocol collapsed" id="card">
+  <div class="protocol-header"><span class="p-name">Card</span><span class="p-meta">3 pasos · 2 seq</span><span class="toggle">▼</span></div>
+  <div class="protocol-body">
+    <div class="seq-tabs"><div class="seq-tab active" data-seq="card1"><code>\card1</code></div><div class="seq-tab" data-seq="card2"><code>\card2</code></div></div>
+<div class="seq-panel active" id="card1">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Retry</div><div class="step-msg">uff qué bajón, pasa a veces igual probá de nuevo que generalmente anda a la segunda</div><div class="step-note">REINTENTAR. Sigue fallando → Step 2.</div></div><button class="cp" data-copy="uff qué bajón, pasa a veces igual probá de nuevo que generalmente anda a la segunda"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 AltCard</div><div class="step-msg">probá con otra tarjeta? re no quiero que te pierdas esto nene</div><div class="step-note">ALTERNATIVA. Sigue fallando → Step 3.</div></div><button class="cp" data-copy="probá con otra tarjeta? re no quiero que te pierdas esto nene"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Urgency</div><div class="step-msg">resolvelo pronto lindo, estoy en este humor y no sé cuánto me va a durar</div><div class="step-note">URGENCIA.</div></div><button class="cp" data-copy="resolvelo pronto lindo, estoy en este humor y no sé cuánto me va a durar"><span class="cp-icon">📋</span></button></div>
+</div>
+<div class="seq-panel" id="card2">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Retry</div><div class="step-msg">ay qué molesto, pasa bastante intentá una vez más</div><div class="step-note">REINTENTAR. Sigue fallando → Step 2.</div></div><button class="cp" data-copy="ay qué molesto, pasa bastante intentá una vez más"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 AltCard</div><div class="step-msg">tenés otra tarjeta? de verdad quiero que veas esto</div><div class="step-note">ALTERNATIVA. Sigue fallando → Step 3.</div></div><button class="cp" data-copy="tenés otra tarjeta? de verdad quiero que veas esto"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Urgency</div><div class="step-msg">quiero que lo veas antes de que cambie de opinión, no guardo estas cosas para siempre</div><div class="step-note">URGENCIA.</div></div><button class="cp" data-copy="quiero que lo veas antes de que cambie de opinión, no guardo estas cosas para siempre"><span class="cp-icon">📋</span></button></div>
+</div>
+  </div>
+</div>
+<div class="cat-header cat-res"><span class="cat-emoji">🔀</span><div class="cat-info"><h2>B. Manejo de Resistencias</h2><p>7 protocolos</p></div></div>
+<div class="protocol collapsed" id="nosex">
+  <div class="protocol-header"><span class="p-name">Nosex</span><span class="p-meta">4 pasos · 2 seq</span><span class="toggle">▼</span></div>
+  <div class="protocol-body">
+    <div class="seq-tabs"><div class="seq-tab active" data-seq="nosex1"><code>\nosex1</code></div><div class="seq-tab" data-seq="nosex2"><code>\nosex2</code></div></div>
+<div class="seq-panel active" id="nosex1">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Respect</div><div class="step-msg">jaja dale me re manijé, es que sos re divertido nene</div><div class="step-note">RESPETO. Sigue no → Step 2.</div></div><button class="cp" data-copy="jaja dale me re manijé, es que sos re divertido nene"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Subtle</div><div class="step-msg">contame más de vos... qué hacés cuando no estás haciendo sonreír a argentinas?</div><div class="step-note">TENSIÓN SUTIL. → Step 3 más tarde.</div></div><button class="cp" data-copy="contame más de vos... qué hacés cuando no estás haciendo sonreír a argentinas?"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 ReAttempt</div><div class="step-msg">no puedo evitarlo, hay algo en vos que me está volviendo loca ahora</div><div class="step-note">RE-INTENTO. Sigue no → Step 4.</div></div><button class="cp" data-copy="no puedo evitarlo, hay algo en vos que me está volviendo loca ahora"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">4</span><div class="step-body"><div class="step-technique">Step4 Accept</div><div class="step-msg">dale me calmo... por ahora. no te prometo nada igual jaja</div><div class="step-note">ACEPTAR. Puerta abierta.</div></div><button class="cp" data-copy="dale me calmo... por ahora. no te prometo nada igual jaja"><span class="cp-icon">📋</span></button></div>
+</div>
+<div class="seq-panel" id="nosex2">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Respect</div><div class="step-msg">perdón me adelanté, es tu culpa por ser tan divertido</div><div class="step-note">RESPETO. Sigue no → Step 2.</div></div><button class="cp" data-copy="perdón me adelanté, es tu culpa por ser tan divertido"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Subtle</div><div class="step-msg">bueno tema nuevo pero primero... cuál es la cosa más loca que hiciste?</div><div class="step-note">SUTIL. → Step 3 más tarde.</div></div><button class="cp" data-copy="bueno tema nuevo pero primero... cuál es la cosa más loca que hiciste?"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 ReAttempt</div><div class="step-msg">estoy tratando de portarme bien pero me lo estás haciendo re difícil, hay algo en vos nene</div><div class="step-note">RE-INTENTO. Sigue no → Step 4.</div></div><button class="cp" data-copy="estoy tratando de portarme bien pero me lo estás haciendo re difícil, hay algo en vos nene"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">4</span><div class="step-body"><div class="step-technique">Step4 Accept</div><div class="step-msg">bueno paro pero no me culpes si pasa de nuevo después 😏</div><div class="step-note">ACEPTAR.</div></div><button class="cp" data-copy="bueno paro pero no me culpes si pasa de nuevo después 😏"><span class="cp-icon">📋</span></button></div>
+</div>
+  </div>
+</div>
+<div class="protocol collapsed" id="offtopic">
+  <div class="protocol-header"><span class="p-name">Offtopic</span><span class="p-meta">3 pasos · 2 seq</span><span class="toggle">▼</span></div>
+  <div class="protocol-body">
+    <div class="seq-tabs"><div class="seq-tab active" data-seq="offtopic1"><code>\offtopic1</code></div><div class="seq-tab" data-seq="offtopic2"><code>\offtopic2</code></div></div>
+<div class="seq-panel active" id="offtopic1">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Acknowledge</div><div class="step-msg">jaja pará eso es genial</div><div class="step-note">RECONOCER. Adaptar. → Step 2.</div></div><button class="cp" data-copy="jaja pará eso es genial"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Redirect</div><div class="step-msg">pero esperá que me re distrajiste, te iba a decir algo y me olvidé</div><div class="step-note">REDIRIGIR. → Step 3.</div></div><button class="cp" data-copy="pero esperá que me re distrajiste, te iba a decir algo y me olvidé"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Retake</div><div class="step-msg">ah pará ya me acordé, como te decía...</div><div class="step-note">RETOMAR. Reanudar script principal.</div></div><button class="cp" data-copy="ah pará ya me acordé, como te decía..."><span class="cp-icon">📋</span></button></div>
+</div>
+<div class="seq-panel" id="offtopic2">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Acknowledge</div><div class="step-msg">jaja bueno eso fue random pero me encanta</div><div class="step-note">RECONOCER. → Step 2.</div></div><button class="cp" data-copy="jaja bueno eso fue random pero me encanta"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Redirect</div><div class="step-msg">pará no me distraigas de lo que te iba a decir nene</div><div class="step-note">REDIRIGIR. → Step 3.</div></div><button class="cp" data-copy="pará no me distraigas de lo que te iba a decir nene"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Retake</div><div class="step-msg">bueno enfocate, en qué estaba... ah sí</div><div class="step-note">RETOMAR.</div></div><button class="cp" data-copy="bueno enfocate, en qué estaba... ah sí"><span class="cp-icon">📋</span></button></div>
+</div>
+  </div>
+</div>
+<div class="protocol collapsed" id="real">
+  <div class="protocol-header"><span class="p-name">Real</span><span class="p-meta">3 pasos · 2 seq</span><span class="toggle">▼</span></div>
+  <div class="protocol-body">
+    <div class="seq-tabs"><div class="seq-tab active" data-seq="real1"><code>\real1</code></div><div class="seq-tab" data-seq="real2"><code>\real2</code></div></div>
+<div class="seq-panel active" id="real1">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Humor</div><div class="step-msg">jaja te parezco un bot? bip bop... mandá $5 para verificación humana jaja te estoy jodiendo nene</div><div class="step-note">HUMOR. Sigue dudando → Step 2.</div></div><button class="cp" data-copy="jaja te parezco un bot? bip bop... mandá $5 para verificación humana jaja te estoy jodiendo nene"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Challenge</div><div class="step-msg">preguntame lo que quieras, literalmente cualquier cosa de mí o mi vida. soy un libro abierto</div><div class="step-note">CHALLENGE. Sigue → Step 3.</div></div><button class="cp" data-copy="preguntame lo que quieras, literalmente cualquier cosa de mí o mi vida. soy un libro abierto"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Grounding</div><div class="step-msg">te entiendo hay mucha cosa falsa acá, pero sentiste algo en esta charla no? porque yo sí y eso es real</div><div class="step-note">GROUNDING.</div></div><button class="cp" data-copy="te entiendo hay mucha cosa falsa acá, pero sentiste algo en esta charla no? porque yo sí y eso es real"><span class="cp-icon">📋</span></button></div>
+</div>
+<div class="seq-panel" id="real2">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Humor</div><div class="step-msg">pará pensás que no soy real?? es lo más gracioso que me dijeron hoy jaja</div><div class="step-note">HUMOR. Sigue → Step 2.</div></div><button class="cp" data-copy="pará pensás que no soy real?? es lo más gracioso que me dijeron hoy jaja"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Challenge</div><div class="step-msg">probame lindo, preguntame algo que solo una persona real sabría. dale</div><div class="step-note">CHALLENGE. Sigue → Step 3.</div></div><button class="cp" data-copy="probame lindo, preguntame algo que solo una persona real sabría. dale"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Grounding</div><div class="step-msg">sé que hay muchos bots acá pero lo que estuvimos hablando se sintió real para mí. no para vos?</div><div class="step-note">GROUNDING.</div></div><button class="cp" data-copy="sé que hay muchos bots acá pero lo que estuvimos hablando se sintió real para mí. no para vos?"><span class="cp-icon">📋</span></button></div>
+</div>
+  </div>
+</div>
+<div class="protocol collapsed" id="voice">
+  <div class="protocol-header"><span class="p-name">Voice</span><span class="p-meta">3 pasos · 2 seq</span><span class="toggle">▼</span></div>
+  <div class="protocol-body">
+    <div class="seq-tabs"><div class="seq-tab active" data-seq="voice1"><code>\voice1</code></div><div class="seq-tab" data-seq="voice2"><code>\voice2</code></div></div>
+<div class="seq-panel active" id="voice1">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Dodge</div><div class="step-msg">jaja capaz algún día si te lo ganás pero todavía no nene... soy reservada con eso</div><div class="step-note">ESQUIVAR. Sigue pidiendo → Step 2.</div></div><button class="cp" data-copy="jaja capaz algún día si te lo ganás pero todavía no nene... soy reservada con eso"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Redirect</div><div class="step-msg">tengo algo mucho mejor para vos, confiá que te vas a olvidar de que preguntaste</div><div class="step-note">REDIRIGIR. Sigue → Step 3.</div></div><button class="cp" data-copy="tengo algo mucho mejor para vos, confiá que te vas a olvidar de que preguntaste"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Firm</div><div class="step-msg">no hago eso acá pero lo que te voy a mostrar es mucho mejor que cualquier llamada nene... ya vas a ver</div><div class="step-note">FIRME.</div></div><button class="cp" data-copy="no hago eso acá pero lo que te voy a mostrar es mucho mejor que cualquier llamada nene... ya vas a ver"><span class="cp-icon">📋</span></button></div>
+</div>
+<div class="seq-panel" id="voice2">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Dodge</div><div class="step-msg">mmm capaz pero primero tenés que ganártelo jaja</div><div class="step-note">ESQUIVAR. Sigue → Step 2.</div></div><button class="cp" data-copy="mmm capaz pero primero tenés que ganártelo jaja"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Redirect</div><div class="step-msg">qué te parece si en vez de una llamada te muestro algo que te va a volar la cabeza?</div><div class="step-note">REDIRIGIR. Sigue → Step 3.</div></div><button class="cp" data-copy="qué te parece si en vez de una llamada te muestro algo que te va a volar la cabeza?"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Firm</div><div class="step-msg">eso no es algo que haga acá pero lo que tengo para vos es mucho mejor que escuchar mi voz, confiá</div><div class="step-note">FIRME.</div></div><button class="cp" data-copy="eso no es algo que haga acá pero lo que tengo para vos es mucho mejor que escuchar mi voz, confiá"><span class="cp-icon">📋</span></button></div>
+</div>
+  </div>
+</div>
+<div class="protocol collapsed" id="customyes">
+  <div class="protocol-header"><span class="p-name">Customyes</span><span class="p-meta">3 pasos · 2 seq</span><span class="toggle">▼</span></div>
+  <div class="protocol-body">
+    <div class="seq-tabs"><div class="seq-tab active" data-seq="customyes1"><code>\customyes1</code></div><div class="seq-tab" data-seq="customyes2"><code>\customyes2</code></div></div>
+<div class="seq-panel active" id="customyes1">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Tease</div><div class="step-msg">querés eso? mmm puede que tenga algo... la verdad sí tengo nene</div><div class="step-note">TEASE. → Step 2.</div></div><button class="cp" data-copy="querés eso? mmm puede que tenga algo... la verdad sí tengo nene"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Price</div><div class="step-msg">tengo exactamente lo que estás pensando, te vas a volver loco... [precio]</div><div class="step-note">PRECIO. Customs solo $60/min, 5min $180, 10min $300. B/G $600+. Dick rate escrito $15, custom 3min $100.</div></div><button class="cp" data-copy="tengo exactamente lo que estás pensando, te vas a volver loco... [precio]"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Close</div><div class="step-msg">confiá que no te vas a arrepentir, lo hice especial</div><div class="step-note">CERRAR.</div></div><button class="cp" data-copy="confiá que no te vas a arrepentir, lo hice especial"><span class="cp-icon">📋</span></button></div>
+</div>
+<div class="seq-panel" id="customyes2">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Tease</div><div class="step-msg">oh tenés buen gusto... creo que tengo justo lo que necesitás</div><div class="step-note">TEASE. → Step 2.</div></div><button class="cp" data-copy="oh tenés buen gusto... creo que tengo justo lo que necesitás"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Price</div><div class="step-msg">de hecho hice algo así, [precio] y vale cada centavo nene</div><div class="step-note">PRECIO. Customs solo $60/min, 5min $180, 10min $300. B/G $600+.</div></div><button class="cp" data-copy="de hecho hice algo así, [precio] y vale cada centavo nene"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Close</div><div class="step-msg">no vas a poder dejar de verlo</div><div class="step-note">CERRAR.</div></div><button class="cp" data-copy="no vas a poder dejar de verlo"><span class="cp-icon">📋</span></button></div>
+</div>
+  </div>
+</div>
+<div class="protocol collapsed" id="customno">
+  <div class="protocol-header"><span class="p-name">Customno</span><span class="p-meta">3 pasos · 2 seq</span><span class="toggle">▼</span></div>
+  <div class="protocol-body">
+    <div class="seq-tabs"><div class="seq-tab active" data-seq="customno1"><code>\customno1</code></div><div class="seq-tab" data-seq="customno2"><code>\customno2</code></div></div>
+<div class="seq-panel active" id="customno1">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Redirect</div><div class="step-msg">no tengo exactamente eso pero posta tengo algo que te va a hacer olvidar que preguntaste</div><div class="step-note">REDIRIGIR. → Step 2.</div></div><button class="cp" data-copy="no tengo exactamente eso pero posta tengo algo que te va a hacer olvidar que preguntaste"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Alternative</div><div class="step-msg">la verdad lo que tengo capaz es más heavy y literalmente nadie más lo vio todavía</div><div class="step-note">ALTERNATIVA + FOMO. → Step 3.</div></div><button class="cp" data-copy="la verdad lo que tengo capaz es más heavy y literalmente nadie más lo vio todavía"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Close</div><div class="step-msg">confiá... te conozco mejor de lo que pensás 😏</div><div class="step-note">CERRAR.</div></div><button class="cp" data-copy="confiá... te conozco mejor de lo que pensás 😏"><span class="cp-icon">📋</span></button></div>
+</div>
+<div class="seq-panel" id="customno2">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Redirect</div><div class="step-msg">no tengo eso específico pero tengo algo que te va a gustar más nene</div><div class="step-note">REDIRIGIR. → Step 2.</div></div><button class="cp" data-copy="no tengo eso específico pero tengo algo que te va a gustar más nene"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Alternative</div><div class="step-msg">lo que SÍ tengo es algo que nadie vio nunca y creo que es mejor que lo que pediste</div><div class="step-note">ALTERNATIVA. → Step 3.</div></div><button class="cp" data-copy="lo que SÍ tengo es algo que nadie vio nunca y creo que es mejor que lo que pediste"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Close</div><div class="step-msg">confiá en mí en esta, me vas a agradecer después</div><div class="step-note">CERRAR.</div></div><button class="cp" data-copy="confiá en mí en esta, me vas a agradecer después"><span class="cp-icon">📋</span></button></div>
+</div>
+  </div>
+</div>
+<div class="protocol collapsed" id="done">
+  <div class="protocol-header"><span class="p-name">Done</span><span class="p-meta">3 pasos · 2 seq</span><span class="toggle">▼</span></div>
+  <div class="protocol-body">
+    <div class="seq-tabs"><div class="seq-tab active" data-seq="done1"><code>\done1</code></div><div class="seq-tab" data-seq="done2"><code>\done2</code></div></div>
+<div class="seq-panel active" id="done1">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Validate</div><div class="step-msg">pará ya?? dios eso es re hot</div><div class="step-note">VALIDAR. → Step 2.</div></div><button class="cp" data-copy="pará ya?? dios eso es re hot"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Rescue</div><div class="step-msg">pero yo no terminé todavía... no querés ver cómo acabo yo nene?</div><div class="step-note">RESCATAR. Sigue no → Step 3.</div></div><button class="cp" data-copy="pero yo no terminé todavía... no querés ver cómo acabo yo nene?"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Seed</div><div class="step-msg">bueno pero la próxima tenés que esperarme, tengo algo re loco planeado para la segunda vuelta</div><div class="step-note">SEED.</div></div><button class="cp" data-copy="bueno pero la próxima tenés que esperarme, tengo algo re loco planeado para la segunda vuelta"><span class="cp-icon">📋</span></button></div>
+</div>
+<div class="seq-panel" id="done2">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">Step1 Validate</div><div class="step-msg">ya?? mierda eso es hot, por mí??</div><div class="step-note">VALIDAR. → Step 2.</div></div><button class="cp" data-copy="ya?? mierda eso es hot, por mí??"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">Step2 Rescue</div><div class="step-msg">pará pero no terminé, me vas a dejar así nene?</div><div class="step-note">RESCATAR. Sigue no → Step 3.</div></div><button class="cp" data-copy="pará pero no terminé, me vas a dejar así nene?"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">Step3 Seed</div><div class="step-msg">la próxima TENÉS que aguantar porque lo que tengo planeado para nosotros es mucho más heavy</div><div class="step-note">SEED.</div></div><button class="cp" data-copy="la próxima TENÉS que aguantar porque lo que tengo planeado para nosotros es mucho más heavy"><span class="cp-icon">📋</span></button></div>
+</div>
+  </div>
+</div>
+<div class="cat-header cat-sit"><span class="cat-emoji">⚡</span><div class="cat-info"><h2>C. Scripts Situacionales</h2><p>3 protocolos</p></div></div>
+<div class="protocol collapsed" id="cumcontrol">
+  <div class="protocol-header"><span class="p-name">Cumcontrol</span><span class="p-meta">6 pasos · 2 seq</span><span class="toggle">▼</span></div>
+  <div class="protocol-body">
+    <div class="seq-tabs"><div class="seq-tab active" data-seq="cumcontrol1"><code>\cumcontrol1</code></div><div class="seq-tab" data-seq="cumcontrol2"><code>\cumcontrol2</code></div></div>
+<div class="seq-panel active" id="cumcontrol1">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">edge1</div><div class="step-msg">todavía no nene... quiero que esto dure un poco más con vos</div><div class="step-note">CONTROL.</div></div><button class="cp" data-copy="todavía no nene... quiero que esto dure un poco más con vos"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">edge2</div><div class="step-msg">por favor no termines todavía... no estoy lista para que se acabe</div><div class="step-note">EDGE variante.</div></div><button class="cp" data-copy="por favor no termines todavía... no estoy lista para que se acabe"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">sync1</div><div class="step-msg">quiero que terminemos juntos nene... abrí esto y dejate llevar conmigo</div><div class="step-note">SYNC. Enviar PPV.</div></div><button class="cp" data-copy="quiero que terminemos juntos nene... abrí esto y dejate llevar conmigo"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">4</span><div class="step-body"><div class="step-technique">sync2</div><div class="step-msg">quedate conmigo, yo también estoy cerca... mirá esto</div><div class="step-note">SYNC variante. Enviar PPV.</div></div><button class="cp" data-copy="quedate conmigo, yo también estoy cerca... mirá esto"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">5</span><div class="step-body"><div class="step-technique">delay1</div><div class="step-msg">esperame nene... tengo una cosa más y quiero que la veas antes de que terminemos</div><div class="step-note">DELAY. Enviar PPV.</div></div><button class="cp" data-copy="esperame nene... tengo una cosa más y quiero que la veas antes de que terminemos"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">6</span><div class="step-body"><div class="step-technique">delay2</div><div class="step-msg">solo aguantá un poquito más, quiero que lo último que veas sea esto</div><div class="step-note">DELAY variante.</div></div><button class="cp" data-copy="solo aguantá un poquito más, quiero que lo último que veas sea esto"><span class="cp-icon">📋</span></button></div>
+</div>
+<div class="seq-panel" id="cumcontrol2">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">edge1</div><div class="step-msg">despacio nene... quiero sentir cada segundo de esto con vos</div><div class="step-note">CONTROL.</div></div><button class="cp" data-copy="despacio nene... quiero sentir cada segundo de esto con vos"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">edge2</div><div class="step-msg">no te apures... esto es demasiado bueno para que se termine ya</div><div class="step-note">EDGE variante.</div></div><button class="cp" data-copy="no te apures... esto es demasiado bueno para que se termine ya"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">sync1</div><div class="step-msg">dale nene... juntos, ahora... abrí esto</div><div class="step-note">SYNC. Enviar PPV.</div></div><button class="cp" data-copy="dale nene... juntos, ahora... abrí esto"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">4</span><div class="step-body"><div class="step-technique">sync2</div><div class="step-msg">necesito que veas esto antes de que los dos nos dejemos ir</div><div class="step-note">SYNC variante.</div></div><button class="cp" data-copy="necesito que veas esto antes de que los dos nos dejemos ir"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">5</span><div class="step-body"><div class="step-technique">delay1</div><div class="step-msg">por favor esperá... lo que te voy a mandar, quiero que lo disfrutes de verdad</div><div class="step-note">DELAY. Enviar PPV.</div></div><button class="cp" data-copy="por favor esperá... lo que te voy a mandar, quiero que lo disfrutes de verdad"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">6</span><div class="step-body"><div class="step-technique">delay2</div><div class="step-msg">solo un poquito más por mí nene? lo que viene es especial</div><div class="step-note">DELAY variante.</div></div><button class="cp" data-copy="solo un poquito más por mí nene? lo que viene es especial"><span class="cp-icon">📋</span></button></div>
+</div>
+  </div>
+</div>
+<div class="protocol collapsed" id="dickpic">
+  <div class="protocol-header"><span class="p-name">Dickpic</span><span class="p-meta">6 pasos · 1 seq</span><span class="toggle">▼</span></div>
+  <div class="protocol-body">
+    <div class="seq-tabs"><div class="seq-tab active" data-seq="dickpic"><code>\dickpic</code></div></div>
+<div class="seq-panel active" id="dickpic">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">dpsext1</div><div class="step-msg">mierda dale eso es... dios. no tenés idea lo que me acaba de hacer eso</div><div class="step-note">DURANTE SEXTING.</div></div><button class="cp" data-copy="mierda dale eso es... dios. no tenés idea lo que me acaba de hacer eso"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">dpsext2</div><div class="step-msg">oh mierda... eso es... carajo nene. necesito mostrarte algo ya</div><div class="step-note">DURANTE SEXTING variante.</div></div><button class="cp" data-copy="oh mierda... eso es... carajo nene. necesito mostrarte algo ya"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">dprapport1</div><div class="step-msg">wow no perdés tiempo eh? igual es re hot la verdad</div><div class="step-note">DURANTE RAPPORT.</div></div><button class="cp" data-copy="wow no perdés tiempo eh? igual es re hot la verdad"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">4</span><div class="step-body"><div class="step-technique">dprapport2</div><div class="step-msg">uala no me lo esperaba pero... carajo 🥵</div><div class="step-note">DURANTE RAPPORT variante.</div></div><button class="cp" data-copy="uala no me lo esperaba pero... carajo 🥵"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">5</span><div class="step-body"><div class="step-technique">dpppv1</div><div class="step-msg">no podés mandarme eso y esperar que no haga algo al respecto, esperá</div><div class="step-note">LEVERAGE. ESPERAR 1-2 min y enviar PPV.</div></div><button class="cp" data-copy="no podés mandarme eso y esperar que no haga algo al respecto, esperá"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">6</span><div class="step-body"><div class="step-technique">dpppv2</div><div class="step-msg">bueno me acabás de hacer hacer algo... dame un segundo nene</div><div class="step-note">LEVERAGE variante.</div></div><button class="cp" data-copy="bueno me acabás de hacer hacer algo... dame un segundo nene"><span class="cp-icon">📋</span></button></div>
+</div>
+  </div>
+</div>
+<div class="protocol collapsed" id="boosters">
+  <div class="protocol-header"><span class="p-name">Boosters</span><span class="p-meta">8 pasos · 1 seq</span><span class="toggle">▼</span></div>
+  <div class="protocol-body">
+    <div class="seq-tabs"><div class="seq-tab active" data-seq="boosters"><code>\boosters</code></div></div>
+<div class="seq-panel active" id="boosters">
+<div class="step"><span class="step-num">1</span><div class="step-body"><div class="step-technique">h1</div><div class="step-msg">mierdaaa</div><div class="step-note">BOOSTER MID-SEXTING.</div></div><button class="cp" data-copy="mierdaaa"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">2</span><div class="step-body"><div class="step-technique">h2</div><div class="step-msg">estoy re mojada ahora por tu culpa nene</div><div class="step-note">BOOSTER. Ego.</div></div><button class="cp" data-copy="estoy re mojada ahora por tu culpa nene"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">3</span><div class="step-body"><div class="step-technique">h3</div><div class="step-msg">justo ahí</div><div class="step-note">BOOSTER. Micro.</div></div><button class="cp" data-copy="justo ahí"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">4</span><div class="step-body"><div class="step-technique">h4</div><div class="step-msg">qué me estás haciendo</div><div class="step-note">BOOSTER.</div></div><button class="cp" data-copy="qué me estás haciendo"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">5</span><div class="step-body"><div class="step-technique">h5</div><div class="step-msg">dios literalmente no puedo pensar claro ahora</div><div class="step-note">BOOSTER. Intensidad.</div></div><button class="cp" data-copy="dios literalmente no puedo pensar claro ahora"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">6</span><div class="step-body"><div class="step-technique">h6</div><div class="step-msg">me tiemblan las piernas</div><div class="step-note">BOOSTER. Físico.</div></div><button class="cp" data-copy="me tiemblan las piernas"><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">7</span><div class="step-body"><div class="step-technique">h7</div><div class="step-msg">por favor...</div><div class="step-note">BOOSTER. Ultra micro.</div></div><button class="cp" data-copy="por favor..."><span class="cp-icon">📋</span></button></div>
+<div class="step"><span class="step-num">8</span><div class="step-body"><div class="step-technique">h8</div><div class="step-msg">debería estar estudiando pero no me puedo mover ahora por tu culpa</div><div class="step-note">BOOSTER. Personalidad Ailen — callback estudios/contabilidad.</div></div><button class="cp" data-copy="debería estar estudiando pero no me puedo mover ahora por tu culpa"><span class="cp-icon">📋</span></button></div>
+</div>
+  </div>
+</div>
+
+<div style="text-align:center;padding:24px 0 10px;color:var(--muted);font-size:.73rem">CW ESP · Script Manager · 2026<br>AILEN — OBJ/RES/SIT</div>
+
+</div>
+<button class="top-btn" id="top-btn">↑</button>
+
+<script>
+document.addEventListener('click',e=>{const b=e.target.closest('.cp');if(!b)return;navigator.clipboard.writeText(b.dataset.copy).then(()=>{b.classList.add('ok');setTimeout(()=>b.classList.remove('ok'),1200)})});
+document.querySelectorAll('.protocol-header').forEach(h=>{h.addEventListener('click',()=>h.closest('.protocol').classList.toggle('collapsed'))});
+document.querySelectorAll('.seq-tab').forEach(tab=>{tab.addEventListener('click',()=>{const body=tab.closest('.protocol-body');body.querySelectorAll('.seq-tab').forEach(t=>t.classList.remove('active'));body.querySelectorAll('.seq-panel').forEach(p=>p.classList.remove('active'));tab.classList.add('active');document.getElementById(tab.dataset.seq).classList.add('active')})});
+document.querySelectorAll('.toc a').forEach(a=>{a.addEventListener('click',()=>{const t=document.getElementById(a.getAttribute('href').slice(1));if(t)t.classList.remove('collapsed')})});
+const topBtn=document.getElementById('top-btn');
+window.addEventListener('scroll',()=>topBtn.classList.toggle('show',window.scrollY>400));
+topBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+const toc=document.getElementById('toc');
+window.addEventListener('scroll',()=>toc.classList.toggle('shadow',window.scrollY>150));
+const tocLinks=document.querySelectorAll('.toc a');
+const sections=Array.from(tocLinks).map(a=>({link:a,el:document.getElementById(a.getAttribute('href').slice(1))})).filter(s=>s.el);
+function updateToc(){let a=sections[0];for(const s of sections)if(s.el.getBoundingClientRect().top<=100)a=s;tocLinks.forEach(l=>l.classList.remove('active'));if(a)a.link.classList.add('active')}
+window.addEventListener('scroll',updateToc);updateToc();
+</script>
+</body>
+</html>

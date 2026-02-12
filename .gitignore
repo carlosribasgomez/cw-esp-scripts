@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+tools/debug_*.py
+tools/find_*.py
+tools/get_*.py
+tools/dump_*.py
+.DS_Store
+Thumbs.db
