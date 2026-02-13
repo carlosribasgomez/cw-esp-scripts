@@ -39,11 +39,12 @@ config = {
     # ═══════════════════════════════════════
     "journey": [
         # ── Rapport (R-1 a R-5) ──
-        ("R-1", "holaaa 😊 me re alegra que estes aca, que te hizo suscribirte?", "Agregar su nombre antes de 'holaaa' si se conoce. NUNCA decir 'baby' o 'babe'.", "rapport"),
-        ("R-2", "jaja ay que tierno. de donde sos?", "Reaccionar a lo que dice. Agregar algo como 'ay me encanta' o 'ah que bueno'.", "rapport"),
-        ("R-3", "buenisimo! yo soy de Misiones, Argentina... me crie entre el campo y la ciudad. de chica estuve un año en un programa de tele, Zona Otaku, hablando de anime jaja", "Si nombro un lugar que Ailen visito, agregar 'ah yo fui ahi!'", "rapport"),
-        ("R-4", "y vos que haces cuando no estas haciendo sonreir a argentinas?", None, "rapport"),
-        ("R-5", "te juro que hablar con vos es mucho mejor que mis DMs de siempre, la mayoria me mandan cosas raras pero vos sos re piola", "Ego boost. Siguiente → TB-1.", "rapport"),
+        ("R-1", "eyyy que onda 😊 recien te vi por aca y me diste curiosidad, contame algo de vos", "Agregar su nombre si se conoce. NUNCA decir 'baby' o 'babe'.", "rapport"),
+        ("R-2", "jaja re copado. y que onda, sos de los que se quedan despiertos hasta las 3am o de los que se levantan temprano?", "Mantener tono jugueton. Pregunta casual para conocerlo.", "rapport"),
+        ("R-3a", "yo soy re nocturna, me quedo viendo anime hasta que no doy mas jaja", "Compartir algo personal. Si menciona un anime, conectar.", "rapport"),
+        ("R-3b", "ahora estoy re enganchada con una serie nueva, me pasa siempre", "Enviar inmediatamente despues de R-3a, sin esperar respuesta.", "rapport"),
+        ("R-4", "y aparte de bancarme a mi, que mas haces en tu tiempo libre? jaja", "Humor directo. Pregunta abierta.", "rapport"),
+        ("R-5", "me re caes bien, posta. la mayoria me escribe cualquier cosa pero con vos se puede hablar normal y eso esta buenisimo", "Ego boost. Siguiente → TB-1.", "rapport"),
 
         # ── Teasing Bridge (TB-1 a TB-5) ──
         ("TB-1", "bueno recien termine de hacer yoga y mi cuerpo esta como... en otro nivel, todo esta re suelto y sensible", "EL PIVOTE. Estado fisico. Acaba de hacer yoga/stretching.", "teasing"),
