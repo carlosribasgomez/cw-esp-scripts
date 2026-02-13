@@ -3,9 +3,9 @@ MODEL FACTORY — Generador maestro para CW ESP
 Genera paquete completo para cada modelo:
   1. Journey XLSX (todas las hojas)
   2. OBJ/RES/SIT XLSX (29 hojas)
-  3. XLSX fusionado único
-  4. HTML guía del chatter
-  5. HTML guía de objeciones
+  3. XLSX fusionado unico
+  4. HTML guia del chatter
+  5. HTML guia de objeciones
   6. Descarga foto de perfil
   7. Actualiza dashboard
 
@@ -41,13 +41,13 @@ SIT_FILL = PatternFill("solid", fgColor="1a2a1a")
 WRAP = Alignment(wrap_text=True, vertical="top")
 THIN = Border(bottom=Side(style="thin", color="30363d"))
 
-GUIDELINES = """Límites de caracteres
+GUIDELINES = """Limites de caracteres
 Name: Hasta 64 caracteres
 Tag: Hasta 32 caracteres
 Text: Hasta 1000 caracteres
 Note: Hasta 246 caracteres
 
-Cada hoja funciona como un tag. Simplemente reemplaza el nombre de la hoja con el nombre del tag deseado, y todos los scripts de la hoja se asignarán automáticamente a ese tag al importar."""
+Cada hoja funciona como un tag. Simplemente reemplaza el nombre de la hoja con el nombre del tag deseado, y todos los scripts de la hoja se asignaran automaticamente a ese tag al importar."""
 
 
 def setup_journey_sheet(ws):
@@ -169,7 +169,7 @@ def download_photo(model_name, dest_folder):
     base_id = os.environ.get("AIRTABLE_BASE", "appA44xNGmua0JMoZ")
     table_id = "tblbb6vMPQLNzqWdJ"  # Tabla Modelo de CW ESP
     
-    formula = f"{{Nombre Artístico}} = '{model_name}'"
+    formula = f"{{Nombre Artistico}} = '{model_name}'"
     r = requests.get(
         f"https://api.airtable.com/v0/{base_id}/{table_id}",
         headers={"Authorization": f"Bearer {token}"},
@@ -317,7 +317,7 @@ class ModelFactory:
             if need_new:
                 if cat == "sext":
                     sext_count += 1
-                    phase_label = "Fase Íntima" if self.c.get("explicit_level") in ("non_explicit", "soft") else "Fase Sexting"
+                    phase_label = "Fase Intima" if self.c.get("explicit_level") in ("non_explicit", "soft") else "Fase Sexting"
                     meta = ("%s %d" % (phase_label, sext_count), "#f85149", "\U0001f525")
                 else:
                     meta = PHASE_META.get(cat, (cat.title(), "#8b949e", "\U0001f4ac"))
@@ -331,7 +331,7 @@ class ModelFactory:
         return phases
 
     def generate_guide_html(self):
-        """Genera index.html — página principal de guía del chatter."""
+        """Genera index.html — pagina principal de guia del chatter."""
         h = html_mod.escape
         c = self.c
         name = c["name"]
@@ -807,7 +807,7 @@ class ModelFactory:
         return path
 
     def generate_objections_html(self):
-        """Genera objections.html — página de manejo OBJ/RES/SIT."""
+        """Genera objections.html — pagina de manejo OBJ/RES/SIT."""
         h = html_mod.escape
         c = self.c
         name = c["name"]

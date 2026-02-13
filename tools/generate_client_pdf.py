@@ -325,7 +325,7 @@ def build_pdf():
     story.append(PageBreak())
 
     # ══════════════════════════════════════
-    # 2. REGLAS DE COMUNICACIÓN
+    # 2. REGLAS DE COMUNICACION
     # ══════════════════════════════════════
     story.append(section_num(2, "Reglas de Comunicaci\u00f3n"))
     story.append(hr())
@@ -371,7 +371,7 @@ def build_pdf():
     story.append(PageBreak())
 
     # ══════════════════════════════════════
-    # 3. GUÍA DE DIMINUTIVOS
+    # 3. GUIA DE DIMINUTIVOS
     # ══════════════════════════════════════
     story.append(section_num(3, "Gu\u00eda de Diminutivos"))
     story.append(hr())
@@ -415,7 +415,7 @@ def build_pdf():
     story.append(PageBreak())
 
     # ══════════════════════════════════════
-    # 4. REGLAS DEL TURURÚ
+    # 4. REGLAS DEL TURURU
     # ══════════════════════════════════════
     story.append(section_num(4, "Reglas del Turur\u00fa"))
     story.append(hr())
@@ -538,7 +538,7 @@ def build_pdf():
     story.append(PageBreak())
 
     # ══════════════════════════════════════
-    # 8. SEGMENTACIÓN DE USUARIOS
+    # 8. SEGMENTACION DE USUARIOS
     # ══════════════════════════════════════
     story.append(section_num(8, "Segmentaci\u00f3n de Usuarios"))
     story.append(hr())
@@ -559,7 +559,7 @@ def build_pdf():
     story.append(PageBreak())
 
     # ══════════════════════════════════════
-    # 9. TÉCNICA "ES MI NOVIO"
+    # 9. TECNICA "ES MI NOVIO"
     # ══════════════════════════════════════
     story.append(section_num(9, 'T\u00e9cnica "Es Mi Novio"'))
     story.append(hr())
@@ -619,7 +619,7 @@ def build_pdf():
     story.append(PageBreak())
 
     # ══════════════════════════════════════
-    # 11. DIFERENCIACIÓN DE ENERGÍA
+    # 11. DIFERENCIACION DE ENERGIA
     # ══════════════════════════════════════
     story.append(section_num(11, "Diferenciaci\u00f3n de Energ\u00eda"))
     story.append(hr())
@@ -749,7 +749,7 @@ def build_pdf():
     story.append(PageBreak())
 
     # ══════════════════════════════════════
-    # 15. TEMPLATES DE DIFUSIÓN
+    # 15. TEMPLATES DE DIFUSION
     # ══════════════════════════════════════
     story.append(section_num(15, "Templates de Difusi\u00f3n (20 templates)"))
     story.append(hr())
